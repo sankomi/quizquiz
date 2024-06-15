@@ -2,9 +2,10 @@ package sanko.quiz.user;
 
 import jakarta.persistence.*; //Entity, Table, Id, Column, GeneratedValue, GenerationType
 
-import lombok.*; //Builder, Getter
+import lombok.*; //NoArgsConstructor, Getter, Builder
 import lombok.experimental.Accessors;
 
+@NoArgsConstructor
 @Accessors(fluent = true)
 @Getter
 @Entity
