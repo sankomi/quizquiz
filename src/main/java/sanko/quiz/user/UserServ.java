@@ -9,6 +9,19 @@ public class UserServ {
 
 	private final UserRepo userRepo;
 
+	public UserCreateRes create(UserCreateReq req) {
+		User exist = userRepo.findOneByUsername(req.username());
+		if (exist != null) return UserCreateRes.fail("username exists");
+
+		User user = User.builder()
+			.username(req.username())
+			.password(req.password())
+			.build();
+		user = userRepo.save(user);
+
+		return UserCreateRes.success();
+	}
+
 	public UserLoginRes login(UserLoginReq req) {
 		User user = userRepo.findOneByUsername(req.username());
 
