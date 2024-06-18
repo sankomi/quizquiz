@@ -1,39 +1,52 @@
 package sanko.quiz.user;
 
 import java.nio.ByteBuffer;
-import java.security.*; //NoSuchAlgorithmException, InvalidKeyException
+import java.security.*; //SecureRandom, NoSuchAlgorithmException, InvalidKeyException
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base32;
 
-public class Password {
+@RequiredArgsConstructor
+@Service
+public class PasswordServ {
 
-	public static boolean verify(String key, String password) {
+	private final Base32 base32 = new Base32();
+	private final SecureRandom random = new SecureRandom();
+
+	public String createKey() {
+		byte[] bytes = new byte[20];
+		random.nextBytes(bytes);
+		return new String(base32.encode(bytes));
+	}
+
+	public boolean verify(String key, String password) {
 		String check = fromTime(key);
 
 		return check.equals(password);
 	}
 
-	public static String fromTime(String key) {
+	public String fromTime(String key) {
 		return fromTime(key, System.currentTimeMillis() / 1000L);
 	}
 
-	public static String fromTime(String key, long time) {
+	public String fromTime(String key, long time) {
 		//get count from time
 		long count = time / 30L;
 
 		return fromCount(key, count);
 	}
 
-	public static String fromCount(String key, long count) {
+	public String fromCount(String key, long count) {
 		//convert count to bytes
 		byte[] c = ByteBuffer.allocate(Long.BYTES)
 			.putLong(count)
 			.array();
 
 		//convert key to bytes
-		byte[] k = new Base32().decode(key);
+		byte[] k = base32.decode(key);
 
 		//hash count with key
 		byte[] hash = hmac(k, c);
@@ -55,7 +68,7 @@ public class Password {
 		return String.format("%06d", number % 1000000);
 	}
 
-	private static byte[] hmac(byte[] key, byte[] message) {
+	private byte[] hmac(byte[] key, byte[] message) {
 		try {
 			Mac mac = Mac.getInstance("HmacSHA1");
 			SecretKeySpec secretKeySpec = new SecretKeySpec(key, "HmacSHA1");

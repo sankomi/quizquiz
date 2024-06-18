@@ -9,6 +9,8 @@ public class UserServ {
 
 	private final UserRepo userRepo;
 
+	private final PasswordServ passwordServ;
+
 	public UserCreateRes create(UserCreateReq req) {
 		User exist = userRepo.findOneByUsername(req.username());
 		if (exist != null) return UserCreateRes.fail("username exists");
