@@ -6,13 +6,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)
-public class UserCreateReq {
+public class UserVerifyReq {
 
 	private String username;
+	private String password;
 
 	@Builder
-	public UserCreateReq(@JsonProperty("username") String username) {
+	public UserVerifyReq(String username, String password) {
 		this.username = username;
+		this.password = password;
 	}
 
 }

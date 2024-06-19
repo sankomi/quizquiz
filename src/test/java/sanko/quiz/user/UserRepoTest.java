@@ -17,10 +17,10 @@ class UserRepoTest {
 	void testUserSave() {
 		//given
 		String username = "username";
-		String password = "password";
+		String key = "key";
 		User user = User.builder()
 			.username(username)
-			.password(password)
+			.key(key)
 			.build();
 
 		//when
@@ -29,7 +29,7 @@ class UserRepoTest {
 		//then
 		assertTrue(user.id() > 0L);
 		assertEquals(username, user.username());
-		assertEquals(password, user.password());
+		assertEquals(key, user.key());
 	}
 
 }

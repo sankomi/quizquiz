@@ -9,17 +9,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class UserCreateRes {
 
 	private boolean create;
+	private String key;
 	private String message;
 
 	@Builder
-	public UserCreateRes(boolean create, String message) {
+	public UserCreateRes(boolean create, String key, String message) {
 		this.create = create;
+		this.key = key;
 		this.message = message;
 	}
 
-	public static UserCreateRes success() {
+	public static UserCreateRes success(String key) {
 		return UserCreateRes.builder()
 			.create(true)
+			.key(key)
 			.build();
 	}
 

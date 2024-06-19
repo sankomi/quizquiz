@@ -13,16 +13,22 @@ import lombok.experimental.Accessors;
 public class User {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String username;
-	private String password;
+	private String key;
+	private boolean verified;
 
 	@Builder
-	public User(String username, String password) {
+	public User(String username, String key) {
 		this.username = username;
-		this.password = password;
+		this.key = key;
+		this.verified = false;
+	}
+
+	public void verify() {
+		this.verified = true;
 	}
 
 }

@@ -27,10 +27,11 @@ class UserContTest {
 		//given
 		String username = "username";
 		String password = "password";
+		String key = "key";
 
 		User user = User.builder()
 			.username(username)
-			.password(password)
+			.key(key)
 			.build();
 
 		UserLoginReq req = UserLoginReq.builder()
@@ -60,11 +61,12 @@ class UserContTest {
 		//given
 		String username = "username";
 		String password = "password";
+		String key = "key";
 		String message = "message";
 
 		User user = User.builder()
 			.username(username)
-			.password(password)
+			.key(key)
 			.build();
 
 		UserLoginReq req = UserLoginReq.builder()

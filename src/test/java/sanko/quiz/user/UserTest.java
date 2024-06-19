@@ -2,7 +2,7 @@ package sanko.quiz.user;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*; //assertEquals, assertFalse
 
 class UserTest {
 
@@ -10,16 +10,17 @@ class UserTest {
 	void testNewUser() {
 		//given
 		String username = "username";
-		String password = "password";
+		String key = "key";
 
 		//when
 		User user = User.builder()
 			.username(username)
-			.password(password)
+			.key(key)
 			.build();
 
 		assertEquals(username, user.username());
-		assertEquals(password, user.password());
+		assertEquals(key, user.key());
+		assertFalse(user.verified());
 	}
 
 }
