@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.mockito.Mockito.*; //when, verify, times, never
-import static org.mockito.ArgumentMatchers.*; //eq, any, anyString;
+import static org.mockito.ArgumentMatchers.*; //eq, any, contains, anyString;
 import static org.junit.jupiter.api.Assertions.*; //assertTrue, assertFalse, assertNull, assertEquals
 
 @ExtendWith(SpringExtension.class)
@@ -24,11 +24,15 @@ class UserServTest {
 	@MockBean
 	private PasswordServ passwordServ;
 
+	@MockBean
+	private QrServ qrServ;
+
 	@Test
 	void testUserCreate() {
 		//given
 		String username = "username";
 		String key = "key";
+		String image = "image";
 
 		UserCreateReq req = UserCreateReq.builder()
 			.username(username)
@@ -45,6 +49,9 @@ class UserServTest {
 		when(passwordServ.createKey())
 			.thenReturn(key);
 
+		when(qrServ.create(anyString()))
+			.thenReturn(image);
+
 		when(userRepo.save(any(User.class)))
 			.thenReturn(user);
 
@@ -54,11 +61,13 @@ class UserServTest {
 		//then
 		assertTrue(res.create());
 		assertEquals(key, res.key());
+		assertEquals(image, res.image());
 		assertNull(res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(userRepo, times(1)).save(any(User.class));
 		verify(passwordServ, times(1)).createKey();
+		verify(qrServ, times(1)).create(contains(key));
 	}
 
 	@Test
@@ -85,11 +94,13 @@ class UserServTest {
 		//then
 		assertFalse(res.create());
 		assertNull(res.key());
+		assertNull(res.image());
 		assertEquals("username exists", res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(userRepo, never()).save(any(User.class));
 		verify(passwordServ, never()).createKey();
+		verify(qrServ, never()).create(anyString());
 	}
 
 	@Test

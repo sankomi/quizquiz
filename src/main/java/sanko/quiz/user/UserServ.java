@@ -11,6 +11,7 @@ public class UserServ {
 	private final UserRepo userRepo;
 
 	private final PasswordServ passwordServ;
+	private final QrServ qrServ;
 
 	@Transactional
 	public UserCreateRes create(UserCreateReq req) {
@@ -24,7 +25,10 @@ public class UserServ {
 			.build();
 		user = userRepo.save(user);
 
-		return UserCreateRes.success(key);
+		String url = "otpauth://totp/sanko:" + req.username() + "?secret=" + key + "&issuer=sanko";
+		String image = qrServ.create(url);
+
+		return UserCreateRes.success(key, image);
 	}
 
 	@Transactional

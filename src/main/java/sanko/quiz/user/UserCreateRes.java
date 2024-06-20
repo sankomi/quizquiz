@@ -10,19 +10,22 @@ public class UserCreateRes {
 
 	private boolean create;
 	private String key;
+	private String image;
 	private String message;
 
 	@Builder
-	public UserCreateRes(boolean create, String key, String message) {
+	public UserCreateRes(boolean create, String key, String image, String message) {
 		this.create = create;
 		this.key = key;
+		this.image = image;
 		this.message = message;
 	}
 
-	public static UserCreateRes success(String key) {
+	public static UserCreateRes success(String key, String image) {
 		return UserCreateRes.builder()
 			.create(true)
 			.key(key)
+			.image(image)
 			.build();
 	}
 
