@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex">
+
+		<title>quizquiz</title>
+
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			html {
+				font-family: monospace;
+			}
+			body {
+				max-width: 80rem;
+				padding: 1rem;
+				margin: 0 auto;
+			}
+
+			input {
+				padding: 0.5rem 1rem;
+				border: 1px solid #ccc;
+
+				font-family: inherit;
+				font-size: inherit;
+				line-height: inherit;
+			}
+			input[type="submit"] {
+				background-color: #ccc;
+			}
+
+			.sections {
+				display: flex;
+				align-items: flex-start;
+				gap: 1rem;
+				flex-wrap: wrap;
+			}
+			.section {
+				flex: 0 0 25rem;
+
+				padding: 1rem;
+				margin: 1rem 0;
+				border: 1px solid #ccc;
+			}
+			.section > :first-child {margin-top: 0;}
+			.section > :last-child {margin-bottom: 0;}
+			.form__row {
+				display: flex;
+				flex-direction: column;
+				margin: 1rem 0;
+			}
+			.form__label {
+				margin: 0.5rem 0;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>quizquiz</h1>
+
+		<div class="sections">
+			<section id="create" class="section">
+				<h2>create</h2>
+				<form id="create-form" class="form">
+					<div class="form__row">
+						<label class="form__label" for="create-username">username</label>
+						<input id="create-username"></label>
+					</div>
+					<div class="form__row">
+						<input type="submit" value="create">
+					</div>
+				</form>
+				<p id="create-message"></p>
+				<img id="create-image" alt>
+				<script>
+					const createForm = document.getElementById("create-form");
+					const createUsername = document.getElementById("create-username");
+					const createMessage = document.getElementById("create-message");
+					const createImage = document.getElementById("create-image");
+
+					createForm.addEventListener("submit", event => {
+						event.preventDefault();
+
+						fetch("/user/create", {
+							method: "POST",
+							headers: {"content-type": "application/json"},
+							body: JSON.stringify({username: createUsername.value}),
+						})
+							.then(res => res.json())
+							.then(json => {
+								if (json.create) {
+									createImage.src = `data:image/png;base64,${json.image}`;
+								} else {
+									createMessage.textContent = json.message;
+								}
+							})
+							.catch(() => createMessage.textContent = "error!");
+					});
+				</script>
+			</section>
+
+			<section id="verify" class="section">
+				<h2>verify</h2>
+				<form id="verify-form" class="form">
+					<div class="form__row">
+						<label class="form__label" for="verify-username">username</label>
+						<input id="verify-username"></label>
+					</div>
+					<div class="form__row">
+						<label class="form__label" for="verify-password">password</label>
+						<input id="verify-password"></label>
+					</div>
+					<div class="form__row">
+						<input type="submit" value="verify">
+					</div>
+				</form>
+				<p id="verify-message"></p>
+				<script>
+					const verifyForm = document.getElementById("verify-form");
+					const verifyUsername = document.getElementById("verify-username");
+					const verifyPassword = document.getElementById("verify-password");
+					const verifyMessage = document.getElementById("verify-message");
+
+					verifyForm.addEventListener("submit", event => {
+						event.preventDefault();
+
+						fetch("/user/verify", {
+							method: "PUT",
+							headers: {"content-type": "application/json"},
+							body: JSON.stringify({
+								username: verifyUsername.value,
+								password: verifyPassword.value,
+							}),
+						})
+							.then(res => res.json())
+							.then(json => {
+								if (json.verify) {
+									verifyMessage.textContent = "verified!";
+								} else {
+									verifyMessage.textContent = json.message;
+								}
+							})
+							.catch(() => verifyMessage.textContent = "error!");
+					});
+				</script>
+			</section>
+
+			<section id="login" class="section">
+				<h2>login</h2>
+				<form id="login-form" class="form">
+					<div class="form__row">
+						<label class="form__label" for="login-username">username</label>
+						<input id="login-username"></label>
+					</div>
+					<div class="form__row">
+						<label class="form__label" for="login-password">password</label>
+						<input id="login-password"></label>
+					</div>
+					<div class="form__row">
+						<input type="submit" value="login">
+					</div>
+				</form>
+				<p id="login-message"></p>
+				<script>
+					const loginForm = document.getElementById("login-form");
+					const loginUsername = document.getElementById("login-username");
+					const loginPassword = document.getElementById("login-password");
+					const loginMessage = document.getElementById("login-message");
+
+					loginForm.addEventListener("submit", event => {
+						event.preventDefault();
+
+						fetch("/user/login", {
+							method: "POST",
+							headers: {"content-type": "application/json"},
+							body: JSON.stringify({
+								username: loginUsername.value,
+								password: loginPassword.value,
+							}),
+						})
+							.then(res => res.json())
+							.then(json => {
+								if (json.login) {
+									loginMessage.textContent = "logged in!";
+								} else {
+									loginMessage.textContent = json.message;
+								}
+							})
+							.catch(() => loginMessage.textContent = "error!");
+					});
+				</script>
+			</section>
+		</div>
+	</body>
+</html>

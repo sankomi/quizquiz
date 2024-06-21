@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static org.mockito.Mockito.*; //when, verify, times, never
 import static org.mockito.ArgumentMatchers.*; //eq, any, contains, anyString;
 import static org.junit.jupiter.api.Assertions.*; //assertTrue, assertFalse, assertNull, assertEquals
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(SpringExtension.class)
 @Import(UserServ.class)
@@ -214,6 +215,7 @@ class UserServTest {
 			.username(username)
 			.key(key)
 			.build();
+		setField(user, "verified", true);
 
 		UserLoginReq req = UserLoginReq.builder()
 			.username(username)
@@ -264,6 +266,38 @@ class UserServTest {
 	}
 
 	@Test
+	void testUserLoginNotVerified() {
+		//given
+		String username = "username";
+		String password = "password";
+		String key = "key";
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+		setField(user, "verified", false);
+
+		UserLoginReq req = UserLoginReq.builder()
+			.username(username)
+			.password(password)
+			.build();
+
+		when(userRepo.findOneByUsername(anyString()))
+			.thenReturn(user);
+
+		//when
+		UserLoginRes res = userServ.login(req);
+
+		//then
+		assertFalse(res.login());
+		assertEquals("user not verified", res.message());
+
+		verify(userRepo, times(1)).findOneByUsername(anyString());
+		verify(passwordServ, never()).verify(anyString(), anyString());
+	}
+
+	@Test
 	void testUserLoginIncorrectPassword() {
 		//given
 		String username = "username";
@@ -274,6 +308,7 @@ class UserServTest {
 			.username(username)
 			.key(key)
 			.build();
+		setField(user, "verified", true);
 
 		UserLoginReq req = UserLoginReq.builder()
 			.username(username)

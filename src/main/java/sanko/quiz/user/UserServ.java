@@ -50,6 +50,7 @@ public class UserServ {
 		User user = userRepo.findOneByUsername(req.username());
 
 		if (user == null) return UserLoginRes.fail("username not found");
+		if (!user.verified()) return UserLoginRes.fail("user not verified");
 		if (!passwordServ.verify(user.key(), req.password())) {
 			return UserLoginRes.fail("password incorrect");
 		}

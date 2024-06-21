@@ -6,3 +6,6 @@ spring:
   datasource:
     url: jdbc:sqlite:data/quiz.db
     driver-class-name: org.sqlite.JDBC
+  web:
+    resources:
+      static-locations: "file:src/main/resources/static"
