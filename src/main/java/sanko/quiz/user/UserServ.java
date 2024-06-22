@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import sanko.quiz.session.SessionServ;
+
 @RequiredArgsConstructor
 @Service
 public class UserServ {
@@ -12,6 +14,7 @@ public class UserServ {
 
 	private final PasswordServ passwordServ;
 	private final QrServ qrServ;
+	private final SessionServ sessionServ;
 
 	@Transactional
 	public UserCreateRes create(UserCreateReq req) {
@@ -41,8 +44,9 @@ public class UserServ {
 		}
 
 		user.verify();
-		userRepo.save(user);
+		user = userRepo.save(user);
 
+		sessionServ.setUser(user);
 		return UserVerifyRes.success();
 	}
 
@@ -55,6 +59,7 @@ public class UserServ {
 			return UserLoginRes.fail("password incorrect");
 		}
 
+		sessionServ.setUser(user);
 		return UserLoginRes.success();
 	}
 

@@ -6,6 +6,15 @@ spring:
   datasource:
     url: jdbc:sqlite:data/quiz.db
     driver-class-name: org.sqlite.JDBC
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
   web:
     resources:
       static-locations: "file:src/main/resources/static"
+
+session:
+  datasource:
+    url: jdbc:sqlite:data/session.db
+    driver-class-name: org.sqlite.JDBC

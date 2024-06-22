@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import sanko.quiz.session.*; //SessionServ, SessionUser
+
 import static org.mockito.Mockito.*; //when, verify, times, never
 import static org.mockito.ArgumentMatchers.*; //eq, any, contains, anyString;
 import static org.junit.jupiter.api.Assertions.*; //assertTrue, assertFalse, assertNull, assertEquals
@@ -27,6 +29,9 @@ class UserServTest {
 
 	@MockBean
 	private QrServ qrServ;
+
+	@MockBean
+	private SessionServ sessionServ;
 
 	@Test
 	void testUserCreate() {
@@ -140,6 +145,7 @@ class UserServTest {
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(passwordServ, times(1)).verify(eq(key), eq(password));
 		verify(userRepo, times(1)).save(eq(user));
+		verify(sessionServ, times(1)).setUser(eq(user));
 	}
 
 	@Test
@@ -167,6 +173,7 @@ class UserServTest {
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(passwordServ, never()).verify(anyString(), anyString());
 		verify(userRepo, never()).save(any(User.class));
+		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
 	@Test
@@ -202,6 +209,7 @@ class UserServTest {
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(passwordServ, times(1)).verify(eq(key), eq(password));
 		verify(userRepo, never()).save(any(User.class));
+		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
 	@Test
@@ -237,6 +245,7 @@ class UserServTest {
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(passwordServ, times(1)).verify(eq(key), eq(password));
+		verify(sessionServ, times(1)).setUser(eq(user));
 	}
 
 	@Test
@@ -263,6 +272,7 @@ class UserServTest {
 
 		verify(userRepo, times(1)).findOneByUsername(anyString());
 		verify(passwordServ, never()).verify(anyString(), anyString());
+		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
 	@Test
@@ -295,6 +305,7 @@ class UserServTest {
 
 		verify(userRepo, times(1)).findOneByUsername(anyString());
 		verify(passwordServ, never()).verify(anyString(), anyString());
+		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
 	@Test
@@ -330,6 +341,7 @@ class UserServTest {
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(passwordServ, times(1)).verify(eq(key), eq(password));
+		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
 }
