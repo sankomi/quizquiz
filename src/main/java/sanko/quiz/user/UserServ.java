@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
-import sanko.quiz.session.SessionServ;
+import sanko.quiz.session.*; //SessionServ, SessionUser
 
 @RequiredArgsConstructor
 @Service
@@ -17,7 +17,9 @@ public class UserServ {
 	private final SessionServ sessionServ;
 
 	@Transactional
-	public UserCreateRes create(UserCreateReq req) {
+	public UserCreateRes create(UserCreateReq req, SessionUser currentUser) {
+		if (currentUser != null) return UserCreateRes.fail("already logged in");
+
 		User exist = userRepo.findOneByUsername(req.username());
 		if (exist != null) return UserCreateRes.fail("username exists");
 
@@ -35,7 +37,8 @@ public class UserServ {
 	}
 
 	@Transactional
-	public UserVerifyRes verify(UserVerifyReq req) {
+	public UserVerifyRes verify(UserVerifyReq req, SessionUser currentUser) {
+		if (currentUser != null) return UserVerifyRes.fail("already logged in");
 		User user = userRepo.findOneByUsername(req.username());
 
 		if (user == null) return UserVerifyRes.fail("username not found");
@@ -50,7 +53,9 @@ public class UserServ {
 		return UserVerifyRes.success();
 	}
 
-	public UserLoginRes login(UserLoginReq req) {
+	public UserLoginRes login(UserLoginReq req, SessionUser currentUser) {
+		if (currentUser != null) return UserLoginRes.fail("already logged in");
+
 		User user = userRepo.findOneByUsername(req.username());
 
 		if (user == null) return UserLoginRes.fail("username not found");
@@ -61,6 +66,14 @@ public class UserServ {
 
 		sessionServ.setUser(user);
 		return UserLoginRes.success();
+	}
+
+	public UserLogoutRes logout(SessionUser currentUser) {
+		if (currentUser == null) return UserLogoutRes.fail("not logged in");
+
+		sessionServ.removeUser();
+
+		return UserLogoutRes.success();
 	}
 
 }

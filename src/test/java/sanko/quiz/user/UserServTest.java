@@ -62,7 +62,7 @@ class UserServTest {
 			.thenReturn(user);
 
 		//when
-		UserCreateRes res = userServ.create(req);
+		UserCreateRes res = userServ.create(req, null);
 
 		//then
 		assertTrue(res.create());
@@ -95,7 +95,7 @@ class UserServTest {
 			.thenReturn(user);
 
 		//when
-		UserCreateRes res = userServ.create(req);
+		UserCreateRes res = userServ.create(req, null);
 
 		//then
 		assertFalse(res.create());
@@ -136,7 +136,7 @@ class UserServTest {
 			.thenReturn(user);
 
 		//when
-		UserVerifyRes res = userServ.verify(req);
+		UserVerifyRes res = userServ.verify(req, null);
 
 		//then
 		assertTrue(res.verify());
@@ -164,7 +164,7 @@ class UserServTest {
 			.thenReturn(null);
 
 		//when
-		UserVerifyRes res = userServ.verify(req);
+		UserVerifyRes res = userServ.verify(req, null);
 
 		//then
 		assertFalse(res.verify());
@@ -200,7 +200,7 @@ class UserServTest {
 			.thenReturn(false);
 
 		//when
-		UserVerifyRes res = userServ.verify(req);
+		UserVerifyRes res = userServ.verify(req, null);
 
 		//then
 		assertFalse(res.verify());
@@ -237,7 +237,7 @@ class UserServTest {
 			.thenReturn(true);
 
 		//when
-		UserLoginRes res = userServ.login(req);
+		UserLoginRes res = userServ.login(req, null);
 
 		//then
 		assertTrue(res.login());
@@ -264,7 +264,7 @@ class UserServTest {
 			.thenReturn(null);
 
 		//when
-		UserLoginRes res = userServ.login(req);
+		UserLoginRes res = userServ.login(req, null);
 
 		//then
 		assertFalse(res.login());
@@ -297,7 +297,7 @@ class UserServTest {
 			.thenReturn(user);
 
 		//when
-		UserLoginRes res = userServ.login(req);
+		UserLoginRes res = userServ.login(req, null);
 
 		//then
 		assertFalse(res.login());
@@ -333,7 +333,7 @@ class UserServTest {
 			.thenReturn(false);
 
 		//when
-		UserLoginRes res = userServ.login(req);
+		UserLoginRes res = userServ.login(req, null);
 
 		//then
 		assertFalse(res.login());

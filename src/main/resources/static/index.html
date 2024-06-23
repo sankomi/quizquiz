@@ -192,6 +192,35 @@
 					});
 				</script>
 			</section>
+
+			<section id="logout" class="section">
+				<h2>logout</h2>
+				<form id="logout-form" class="form">
+					<div class="form__row">
+						<input type="submit" value="logout">
+					</div>
+				</form>
+				<p id="logout-message"></p>
+				<script>
+					const logoutForm = document.getElementById("logout-form");
+					const logoutMessage = document.getElementById("logout-message");
+
+					logoutForm.addEventListener("submit", event => {
+						event.preventDefault();
+
+						fetch("/user/login", {method: "DELETE"})
+							.then(res => res.json())
+							.then(json => {
+								if (json.logout) {
+									logoutMessage.textContent = "logged out!";
+								} else {
+									logoutMessage.textContent = json.message;
+								}
+							})
+							.catch(() => logoutMessage.textContent = "error!");
+					});
+				</script>
+			</section>
 		</div>
 	</body>
 </html>
