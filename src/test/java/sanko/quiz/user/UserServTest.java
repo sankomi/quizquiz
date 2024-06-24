@@ -77,6 +77,38 @@ class UserServTest {
 	}
 
 	@Test
+	void testUserCreateLoggedIn() {
+		//given
+		String username = "username";
+		String key = "key";
+
+		UserCreateReq req = UserCreateReq.builder()
+			.username(username)
+			.build();
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+
+		SessionUser sessionUser = SessionUser.builder()
+			.user(user)
+			.build();
+
+		//when
+		UserCreateRes res = userServ.create(req, sessionUser);
+
+		//then
+		assertFalse(res.create());
+		assertEquals("already logged in", res.message());
+
+		verify(userRepo, never()).findOneByUsername(anyString());
+		verify(userRepo, never()).save(any(User.class));
+		verify(passwordServ, never()).createKey();
+		verify(qrServ, never()).create(anyString());
+	}
+
+	@Test
 	void testUserCreateExists() {
 		//given
 		String username = "username";
@@ -146,6 +178,40 @@ class UserServTest {
 		verify(passwordServ, times(1)).verify(eq(key), eq(password));
 		verify(userRepo, times(1)).save(eq(user));
 		verify(sessionServ, times(1)).setUser(eq(user));
+	}
+
+	@Test
+	void testUserVerifyLoggedIn() {
+		//given
+		String username = "username";
+		String password = "password";
+		String key = "key";
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+
+		UserVerifyReq req = UserVerifyReq.builder()
+			.username(username)
+			.password(password)
+			.build();
+
+		SessionUser sessionUser = SessionUser.builder()
+			.user(user)
+			.build();
+
+		//when
+		UserVerifyRes res = userServ.verify(req, sessionUser);
+
+		//then
+		assertFalse(res.verify());
+		assertEquals("already logged in", res.message());
+
+		verify(userRepo, never()).findOneByUsername(anyString());
+		verify(passwordServ, never()).verify(anyString(), anyString());
+		verify(userRepo, never()).save(any(User.class));
+		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
 	@Test
@@ -249,6 +315,40 @@ class UserServTest {
 	}
 
 	@Test
+	void testUserLoginLoggedIn() {
+		//given
+		String username = "username";
+		String password = "password";
+		String key = "key";
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+		setField(user, "verified", true);
+
+		UserLoginReq req = UserLoginReq.builder()
+			.username(username)
+			.password(password)
+			.build();
+
+		SessionUser sessionUser = SessionUser.builder()
+			.user(user)
+			.build();
+
+		//when
+		UserLoginRes res = userServ.login(req, sessionUser);
+
+		//then
+		assertFalse(res.login());
+		assertEquals("already logged in", res.message());
+
+		verify(userRepo, never()).findOneByUsername(anyString());
+		verify(passwordServ, never()).verify(anyString(), anyString());
+		verify(sessionServ, never()).setUser(any(User.class));
+	}
+
+	@Test
 	void testUserLoginNotFound() {
 		//given
 		String username = "username";
@@ -342,6 +442,46 @@ class UserServTest {
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(passwordServ, times(1)).verify(eq(key), eq(password));
 		verify(sessionServ, never()).setUser(any(User.class));
+	}
+
+	@Test
+	void testUserLogout() {
+		//given
+		String username = "username";
+		String password = "password";
+		String key = "key";
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+
+		SessionUser sessionUser = SessionUser.builder()
+			.user(user)
+			.build();
+
+		//when
+		UserLogoutRes res = userServ.logout(sessionUser);
+
+		//then
+		assertTrue(res.logout());
+		assertNull(res.message());
+
+		verify(sessionServ, times(1)).removeUser();
+	}
+
+	@Test
+	void testUserLogoutNotLoggedIn() {
+		//given
+
+		//when
+		UserLogoutRes res = userServ.logout(null);
+
+		//then
+		assertFalse(res.logout());
+		assertEquals("not logged in", res.message());
+
+		verify(sessionServ, never()).removeUser();
 	}
 
 }
