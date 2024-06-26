@@ -176,11 +176,11 @@ class UserContTest {
 			.user(user)
 			.build();
 
-		when(userServ.logout(eq(sessionUser)))
-			.thenReturn(UserLogoutRes.success());
-
 		when(sessionServ.getUser())
-			.thenReturn(sessionUser);
+			.thenReturn(user);
+
+		when(userServ.logout(eq(user)))
+			.thenReturn(UserLogoutRes.success());
 
 		//when
 		ResultActions res = mockMvc.perform(
@@ -192,7 +192,7 @@ class UserContTest {
 		res.andExpect(status().isOk())
 			.andExpect(jsonPath("$.logout").value("true"));
 
-		verify(userServ, times(1)).logout(eq(sessionUser));
+		verify(userServ, times(1)).logout(eq(user));
 		verify(sessionServ, times(1)).getUser();
 	}
 

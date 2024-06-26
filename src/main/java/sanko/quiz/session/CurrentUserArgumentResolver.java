@@ -7,6 +7,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.*; //HandlerMethodArgumentResolver, ModelAndViewContainer
 import lombok.RequiredArgsConstructor;
 
+import sanko.quiz.user.User;
+
 @RequiredArgsConstructor
 @Component
 public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
@@ -16,7 +18,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		boolean checkAnnotation = parameter.getParameterAnnotation(CurrentUser.class) != null;
-		boolean checkClass = SessionUser.class.equals(parameter.getParameterType());
+		boolean checkClass = User.class.equals(parameter.getParameterType());
 
 		return checkAnnotation && checkClass;
 	}

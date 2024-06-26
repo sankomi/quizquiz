@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import sanko.quiz.session.*; //SessionServ, SessionUser
+import sanko.quiz.session.SessionServ;
 
 import static org.mockito.Mockito.*; //when, verify, times, never
 import static org.mockito.ArgumentMatchers.*; //eq, any, contains, anyString;
@@ -91,12 +91,8 @@ class UserServTest {
 			.key(key)
 			.build();
 
-		SessionUser sessionUser = SessionUser.builder()
-			.user(user)
-			.build();
-
 		//when
-		UserCreateRes res = userServ.create(req, sessionUser);
+		UserCreateRes res = userServ.create(req, user);
 
 		//then
 		assertFalse(res.create());
@@ -197,12 +193,8 @@ class UserServTest {
 			.password(password)
 			.build();
 
-		SessionUser sessionUser = SessionUser.builder()
-			.user(user)
-			.build();
-
 		//when
-		UserVerifyRes res = userServ.verify(req, sessionUser);
+		UserVerifyRes res = userServ.verify(req, user);
 
 		//then
 		assertFalse(res.verify());
@@ -332,12 +324,8 @@ class UserServTest {
 			.password(password)
 			.build();
 
-		SessionUser sessionUser = SessionUser.builder()
-			.user(user)
-			.build();
-
 		//when
-		UserLoginRes res = userServ.login(req, sessionUser);
+		UserLoginRes res = userServ.login(req, user);
 
 		//then
 		assertFalse(res.login());
@@ -456,12 +444,8 @@ class UserServTest {
 			.key(key)
 			.build();
 
-		SessionUser sessionUser = SessionUser.builder()
-			.user(user)
-			.build();
-
 		//when
-		UserLogoutRes res = userServ.logout(sessionUser);
+		UserLogoutRes res = userServ.logout(user);
 
 		//then
 		assertTrue(res.logout());

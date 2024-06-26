@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import sanko.quiz.user.User;
+import sanko.quiz.user.*; //User, UserRepo
 
 import static org.mockito.Mockito.*; //when, verify, times
 import static org.mockito.ArgumentMatchers.*; //eq, argThat
@@ -25,6 +25,9 @@ class SessionServTest {
 
 	@MockBean
 	private HttpSession httpSession;
+
+	@MockBean
+	private UserRepo userRepo;
 
 	@Test
 	void testGetUser() {
@@ -46,13 +49,17 @@ class SessionServTest {
 		when(httpSession.getAttribute(eq("user")))
 			.thenReturn(currentUser);
 
+		when(userRepo.findOneById(eq(id)))
+			.thenReturn(user);
+
 		//when
-		SessionUser sessionUser = sessionServ.getUser();
+		User sessionUser = sessionServ.getUser();
 
 		//then
 		assertEquals(id, sessionUser.id());
 
 		verify(httpSession, times(1)).getAttribute(eq("user"));
+		verify(userRepo, times(1)).findOneById(eq(id));
 	}
 
 	@Test

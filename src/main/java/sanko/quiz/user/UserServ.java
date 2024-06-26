@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
-import sanko.quiz.session.*; //SessionServ, SessionUser
+import sanko.quiz.session.SessionServ;
 
 @RequiredArgsConstructor
 @Service
@@ -17,7 +17,7 @@ public class UserServ {
 	private final SessionServ sessionServ;
 
 	@Transactional
-	public UserCreateRes create(UserCreateReq req, SessionUser currentUser) {
+	public UserCreateRes create(UserCreateReq req, User currentUser) {
 		if (currentUser != null) return UserCreateRes.fail("already logged in");
 
 		User exist = userRepo.findOneByUsername(req.username());
@@ -37,7 +37,7 @@ public class UserServ {
 	}
 
 	@Transactional
-	public UserVerifyRes verify(UserVerifyReq req, SessionUser currentUser) {
+	public UserVerifyRes verify(UserVerifyReq req, User currentUser) {
 		if (currentUser != null) return UserVerifyRes.fail("already logged in");
 		User user = userRepo.findOneByUsername(req.username());
 
@@ -53,7 +53,7 @@ public class UserServ {
 		return UserVerifyRes.success();
 	}
 
-	public UserLoginRes login(UserLoginReq req, SessionUser currentUser) {
+	public UserLoginRes login(UserLoginReq req, User currentUser) {
 		if (currentUser != null) return UserLoginRes.fail("already logged in");
 
 		User user = userRepo.findOneByUsername(req.username());
@@ -68,7 +68,7 @@ public class UserServ {
 		return UserLoginRes.success();
 	}
 
-	public UserLogoutRes logout(SessionUser currentUser) {
+	public UserLogoutRes logout(User currentUser) {
 		if (currentUser == null) return UserLogoutRes.fail("not logged in");
 
 		sessionServ.removeUser();

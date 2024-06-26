@@ -221,6 +221,44 @@
 					});
 				</script>
 			</section>
+
+			<section id="createquiz" class="section">
+				<h2>create quiz</h2>
+				<form id="createquiz-form" class="form">
+					<div class="form__row">
+						<label class="form__label" for="createquiz-title">title</label>
+						<input id="createquiz-title"></label>
+					</div>
+					<div class="form__row">
+						<input type="submit" value="create">
+					</div>
+				</form>
+				<p id="createquiz-message"></p>
+				<script>
+					const createquizForm = document.getElementById("createquiz-form");
+					const createquizTitle = document.getElementById("createquiz-title");
+					const createquizMessage = document.getElementById("createquiz-message");
+
+					createquizForm.addEventListener("submit", event => {
+						event.preventDefault();
+
+						fetch("/quiz/create", {
+							method: "POST",
+							headers: {"content-type": "application/json"},
+							body: JSON.stringify({title: createquizTitle.value}),
+						})
+							.then(res => res.json())
+							.then(json => {
+								if (json.create) {
+									createquizMessage.textContent = "created!";
+								} else {
+									createquizMessage.textContent = json.message;
+								}
+							})
+							.catch(() => createquizMessage.textContent = "error!");
+					});
+				</script>
+			</section>
 		</div>
 	</body>
 </html>
