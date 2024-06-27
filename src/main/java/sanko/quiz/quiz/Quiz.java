@@ -28,7 +28,7 @@ public class Quiz {
 	private String title;
 
 	@OneToMany(mappedBy = "quiz")
-	@OrderBy("order ASC")
+	@OrderBy("number ASC")
 	private Set<Question> questions;
 
 	@Builder

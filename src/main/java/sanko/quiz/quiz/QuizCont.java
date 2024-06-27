@@ -1,6 +1,6 @@
 package sanko.quiz.quiz;
 
-import org.springframework.web.bind.annotation.*; //RestController, RequestMapping, PostMapping, RequestBody
+import org.springframework.web.bind.annotation.*; //RestController, RequestMapping, PostMapping, RequestBody, PathVariable
 import lombok.RequiredArgsConstructor;
 
 import sanko.quiz.user.User;
@@ -19,6 +19,14 @@ public class QuizCont {
 		@CurrentUser User currentUser
 	) {
 		return quizServ.create(req, currentUser);
+	}
+
+	@GetMapping("/{title}")
+	public QuizFetchRes fetch(
+		@PathVariable("title") String title,
+		@CurrentUser User currentUser
+	) {
+		return quizServ.fetch(title, currentUser);
 	}
 
 }

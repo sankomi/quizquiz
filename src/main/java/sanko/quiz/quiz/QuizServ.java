@@ -25,4 +25,13 @@ public class QuizServ {
 		return QuizCreateRes.success();
 	}
 
+	public QuizFetchRes fetch(String title, User currentUser) {
+		if (currentUser == null) return QuizFetchRes.fail("not logged in");
+
+		Quiz quiz = quizRepo.findOneByTitleAndUser(title, currentUser);
+		if (quiz == null) return QuizFetchRes.fail("not found");
+
+		return QuizFetchRes.success(quiz);
+	}
+
 }

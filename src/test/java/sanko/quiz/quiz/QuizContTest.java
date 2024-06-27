@@ -1,5 +1,7 @@
 package sanko.quiz.quiz;
 
+import java.util.Set;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.*; //MockMvc, ResultActions
@@ -63,6 +65,44 @@ class QuizContTest {
 			.andExpect(jsonPath("$.create").value("true"));
 
 		verify(quizServ, times(1)).create(any(QuizCreateReq.class), eq(user));
+		verify(sessionServ, times(1)).getUser();
+	}
+
+	@Test
+	void testQuizFetch() throws Exception {
+		//given
+		String title = "title";
+		String username = "username";
+		String key = "key";
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+
+		Quiz quiz = Quiz.builder()
+			.user(user)
+			.title(title)
+			.build();
+		setField(quiz, "questions", Set.of());
+
+		when(sessionServ.getUser())
+			.thenReturn(user);
+
+		when(quizServ.fetch(eq(title), eq(user)))
+			.thenReturn(QuizFetchRes.success(quiz));
+
+		//when
+		ResultActions res = mockMvc.perform(
+			get("/quiz/" + title)
+		);
+
+		//then
+		res.andExpect(status().isOk())
+			.andExpect(jsonPath("$.fetch").value("true"))
+			.andExpect(jsonPath("$.title").value(title));
+
+		verify(quizServ, times(1)).fetch(eq(title), eq(user));
 		verify(sessionServ, times(1)).getUser();
 	}
 

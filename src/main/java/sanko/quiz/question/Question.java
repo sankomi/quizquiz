@@ -22,6 +22,8 @@ public class Question {
 	@JoinColumn(name = "quiz")
 	private Quiz quiz;
 
+	private Long number;
+
 	private String text;
 
 	@Builder
