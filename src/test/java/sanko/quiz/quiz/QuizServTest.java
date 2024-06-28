@@ -29,21 +29,30 @@ class QuizServTest {
 	@Test
 	void testQuizCreate() {
 		//given
+		Long userId = 1L;
+		Long quizId = 2L;
 		String title = "title";
 		String username = "username";
 		String key = "key";
-
-		QuizCreateReq req = QuizCreateReq.builder()
-			.title(title)
-			.build();
 
 		User user = User.builder()
 			.username(username)
 			.key(key)
 			.build();
+		setField(user, "id", userId);
+
+		Quiz quiz = Quiz.builder()
+			.user(user)
+			.title(title)
+			.build();
+		setField(quiz, "id", quizId);
+		setField(quiz, "questions", Set.of());
+
+		when(quizRepo.save(any(Quiz.class)))
+			.thenReturn(quiz);
 
 		//when
-		QuizCreateRes res = quizServ.create(req, user);
+		QuizCreateRes res = quizServ.create(user);
 
 		//then
 		assertTrue(res.create());
@@ -57,12 +66,8 @@ class QuizServTest {
 		//given
 		String title = "title";
 
-		QuizCreateReq req = QuizCreateReq.builder()
-			.title(title)
-			.build();
-
 		//when
-		QuizCreateRes res = quizServ.create(req, null);
+		QuizCreateRes res = quizServ.create(null);
 
 		//then
 		assertFalse(res.create());
@@ -74,6 +79,8 @@ class QuizServTest {
 	@Test
 	void testQuizFetch() {
 		//given
+		Long userId = 1L;
+		Long quizId = 2L;
 		String title = "title";
 		String username = "username";
 		String key = "key";
@@ -82,30 +89,34 @@ class QuizServTest {
 			.username(username)
 			.key(key)
 			.build();
+		setField(user, "id", userId);
 
 		Quiz quiz = Quiz.builder()
 			.user(user)
 			.title(title)
 			.build();
+		setField(quiz, "id", quizId);
 		setField(quiz, "questions", Set.of());
 
-		when(quizRepo.findOneByTitleAndUser(eq(title), eq(user)))
+		when(quizRepo.findOneByIdAndUser(eq(quizId), eq(user)))
 			.thenReturn(quiz);
 
 		//when
-		QuizFetchRes res = quizServ.fetch(title, user);
+		QuizFetchRes res = quizServ.fetch(quizId, user);
 
 		//then
 		assertTrue(res.fetch());
 		assertNull(res.message());
 		assertEquals(title, res.title());
 
-		verify(quizRepo, times(1)).findOneByTitleAndUser(eq(title), eq(user));
+		verify(quizRepo, times(1)).findOneByIdAndUser(eq(quizId), eq(user));
 	}
 
 	@Test
 	void testQuizFetchNotFound() {
 		//given
+		Long userId = 1L;
+		Long quizId = 2L;
 		String title = "title";
 		String username = "username";
 		String key = "key";
@@ -114,19 +125,20 @@ class QuizServTest {
 			.username(username)
 			.key(key)
 			.build();
+		setField(user, "id", userId);
 
-		when(quizRepo.findOneByTitleAndUser(eq(title), eq(user)))
+		when(quizRepo.findOneByIdAndUser(eq(quizId), eq(user)))
 			.thenReturn(null);
 
 		//when
-		QuizFetchRes res = quizServ.fetch(title, user);
+		QuizFetchRes res = quizServ.fetch(quizId, user);
 
 		//then
 		assertFalse(res.fetch());
 		assertEquals("not found", res.message());
 		assertNull(res.title());
 
-		verify(quizRepo, times(1)).findOneByTitleAndUser(eq(title), eq(user));
+		verify(quizRepo, times(1)).findOneByIdAndUser(eq(quizId), eq(user));
 	}
 
 }

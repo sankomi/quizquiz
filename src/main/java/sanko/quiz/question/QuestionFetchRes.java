@@ -8,7 +8,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Getter(onMethod_ = @JsonProperty)
 public class QuestionFetchRes {
 
+	private Long questionId;
+	private String text;
+
 	public QuestionFetchRes(Question question) {
+		this.questionId = question.id();
+		this.text = question.text();
 	}
 
 }

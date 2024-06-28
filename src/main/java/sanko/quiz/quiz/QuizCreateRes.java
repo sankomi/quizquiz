@@ -11,15 +11,19 @@ public class QuizCreateRes {
 	private boolean create;
 	private String message;
 
+	private Long quizId;
+
 	@Builder
-	public QuizCreateRes(boolean create, String message) {
+	public QuizCreateRes(boolean create, Long quizId, String message) {
 		this.create = create;
+		this.quizId = quizId;
 		this.message = message;
 	}
 
-	public static QuizCreateRes success() {
+	public static QuizCreateRes success(Quiz quiz) {
 		return QuizCreateRes.builder()
 			.create(true)
+			.quizId(quiz.id())
 			.build();
 	}
 

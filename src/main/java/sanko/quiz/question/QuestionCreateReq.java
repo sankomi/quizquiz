@@ -1,4 +1,4 @@
-package sanko.quiz.quiz;
+package sanko.quiz.question;
 
 import lombok.*; //Getter, Builder
 import lombok.experimental.Accessors;
@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)
-public class QuizCreateReq {
+public class QuestionCreateReq {
 
-	private String title;
+	private Long quizId;
 
 	@Builder
-	public QuizCreateReq(@JsonProperty("title") String title) {
-		this.title = title;
+	public QuestionCreateReq(@JsonProperty("quizId") Long quizId) {
+		this.quizId = quizId;
 	}
 
 }

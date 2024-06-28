@@ -48,7 +48,7 @@ class UserContTest {
 
 		//when
 		ResultActions res = mockMvc.perform(
-			post("/user/create")
+			post("/user")
 				.contentType("application/json")
 				.content(new ObjectMapper().writeValueAsString(req))
 		);

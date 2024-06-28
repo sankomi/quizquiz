@@ -6,6 +6,7 @@ import sanko.quiz.user.User;
 
 public interface QuizRepo extends JpaRepository<Quiz, Long> {
 
-	Quiz findOneByTitleAndUser(String title, User user);
+	Quiz findOneById(Long id);
+	Quiz findOneByIdAndUser(Long id, User user);
 
 }

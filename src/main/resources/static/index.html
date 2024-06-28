@@ -83,7 +83,7 @@
 					createForm.addEventListener("submit", event => {
 						event.preventDefault();
 
-						fetch("/user/create", {
+						fetch("/user", {
 							method: "POST",
 							headers: {"content-type": "application/json"},
 							body: JSON.stringify({username: createUsername.value}),
@@ -226,36 +226,107 @@
 				<h2>create quiz</h2>
 				<form id="createquiz-form" class="form">
 					<div class="form__row">
-						<label class="form__label" for="createquiz-title">title</label>
-						<input id="createquiz-title"></label>
-					</div>
-					<div class="form__row">
 						<input type="submit" value="create">
 					</div>
 				</form>
 				<p id="createquiz-message"></p>
 				<script>
 					const createquizForm = document.getElementById("createquiz-form");
-					const createquizTitle = document.getElementById("createquiz-title");
 					const createquizMessage = document.getElementById("createquiz-message");
 
 					createquizForm.addEventListener("submit", event => {
 						event.preventDefault();
 
-						fetch("/quiz/create", {
-							method: "POST",
-							headers: {"content-type": "application/json"},
-							body: JSON.stringify({title: createquizTitle.value}),
-						})
+						fetch("/quiz", {method: "POST"})
 							.then(res => res.json())
 							.then(json => {
 								if (json.create) {
-									createquizMessage.textContent = "created!";
+									createquizMessage.textContent = `quizId = ${json.quizId}`;
 								} else {
 									createquizMessage.textContent = json.message;
 								}
 							})
 							.catch(() => createquizMessage.textContent = "error!");
+					});
+				</script>
+			</section>
+
+			<section id="fetchquiz" class="section">
+				<h2>fetch quiz</h2>
+				<form id="fetchquiz-form" class="form">
+					<div class="form__row">
+						<label class="form__label" for="fetchquiz-id">id</label>
+						<input id="fetchquiz-id"></label>
+					</div>
+					<div class="form__row">
+						<input type="submit" value="fetch">
+					</div>
+				</form>
+				<p id="fetchquiz-message"></p>
+				<script>
+					const fetchquizForm = document.getElementById("fetchquiz-form");
+					const fetchquizId = document.getElementById("fetchquiz-id");
+					const fetchquizMessage = document.getElementById("fetchquiz-message");
+
+					fetchquizForm.addEventListener("submit", event => {
+						event.preventDefault();
+
+						fetch(`/quiz/${fetchquizId.value}`)
+							.then(res => res.json())
+							.then(json => {
+								if (json.fetch) {
+									fetchquizMessage.innerHTML = `
+										<div>quizId = ${json.quizId}</div>
+										<div>title = ${json.title}</div>
+										<ul>
+											${json.questions.map(q => {
+												return "<li>" + q.questionId + ": " + q.text + "</li>";
+											}).join("")}
+										</ul>
+									`;
+								} else {
+									fetchquizMessage.textContent = json.message;
+								}
+							})
+							.catch(() => fetchquizMessage.textContent = "error!");
+					});
+				</script>
+			</section>
+
+			<section id="createquestion" class="section">
+				<h2>create question</h2>
+				<form id="createquestion-form" class="form">
+					<div class="form__row">
+						<label class="form__label" for="createquestion-quizid">id</label>
+						<input id="createquestion-quizid"></label>
+					</div>
+					<div class="form__row">
+						<input type="submit" value="create">
+					</div>
+				</form>
+				<p id="createquestion-message"></p>
+				<script>
+					const createquestionForm = document.getElementById("createquestion-form");
+					const createquestionQuizid = document.getElementById("createquestion-quizid");
+					const createquestionMessage = document.getElementById("createquestion-message");
+
+					createquestionForm.addEventListener("submit", event => {
+						event.preventDefault();
+
+						fetch("/question", {
+							method: "POST",
+							headers: {"content-type": "application/json"},
+							body: JSON.stringify({quizId: createquestionQuizid.value}),
+						})
+							.then(res => res.json())
+							.then(json => {
+								if (json.create) {
+									createquestionMessage.textContent = `${json.questionId}: number = ${json.number}`;
+								} else {
+									createquestionMessage.textContent = json.message;
+								}
+							})
+							.catch(() => createquestionMessage.textContent = "error!");
 					});
 				</script>
 			</section>

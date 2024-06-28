@@ -13,20 +13,17 @@ public class QuizCont {
 
 	private final QuizServ quizServ;
 
-	@PostMapping("/create")
-	public QuizCreateRes create(
-		@RequestBody QuizCreateReq req,
-		@CurrentUser User currentUser
-	) {
-		return quizServ.create(req, currentUser);
+	@PostMapping()
+	public QuizCreateRes create(@CurrentUser User currentUser) {
+		return quizServ.create(currentUser);
 	}
 
-	@GetMapping("/{title}")
+	@GetMapping("/{quizId}")
 	public QuizFetchRes fetch(
-		@PathVariable("title") String title,
+		@PathVariable("quizId") Long quizId,
 		@CurrentUser User currentUser
 	) {
-		return quizServ.fetch(title, currentUser);
+		return quizServ.fetch(quizId, currentUser);
 	}
 
 }

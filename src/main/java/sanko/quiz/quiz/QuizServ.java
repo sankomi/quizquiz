@@ -13,22 +13,21 @@ public class QuizServ {
 	private final QuizRepo quizRepo;
 
 	@Transactional
-	public QuizCreateRes create(QuizCreateReq req, User currentUser) {
+	public QuizCreateRes create(User currentUser) {
 		if (currentUser == null) return QuizCreateRes.fail("not logged in");
 
 		Quiz quiz = Quiz.builder()
 			.user(currentUser)
-			.title(req.title())
 			.build();
-		quizRepo.save(quiz);
+		quiz = quizRepo.save(quiz);
 
-		return QuizCreateRes.success();
+		return QuizCreateRes.success(quiz);
 	}
 
-	public QuizFetchRes fetch(String title, User currentUser) {
+	public QuizFetchRes fetch(Long quizId, User currentUser) {
 		if (currentUser == null) return QuizFetchRes.fail("not logged in");
 
-		Quiz quiz = quizRepo.findOneByTitleAndUser(title, currentUser);
+		Quiz quiz = quizRepo.findOneByIdAndUser(quizId, currentUser);
 		if (quiz == null) return QuizFetchRes.fail("not found");
 
 		return QuizFetchRes.success(quiz);

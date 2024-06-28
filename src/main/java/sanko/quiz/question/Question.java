@@ -27,8 +27,9 @@ public class Question {
 	private String text;
 
 	@Builder
-	public Question(Quiz quiz, String text) {
+	public Question(Quiz quiz, Long number, String text) {
 		this.quiz = quiz;
+		this.number = number;
 		this.text = text;
 	}
 

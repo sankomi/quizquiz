@@ -16,13 +16,15 @@ public class QuizFetchRes {
 	private boolean fetch;
 	private String message;
 
+	private Long quizId;
 	private String title;
 	private Set<QuestionFetchRes> questions;
 
 	@Builder
-	public QuizFetchRes(boolean fetch, String message, String title, Set<QuestionFetchRes> questions) {
+	public QuizFetchRes(boolean fetch, String message, Long quizId, String title, Set<QuestionFetchRes> questions) {
 		this.fetch = fetch;
 		this.message = message;
+		this.quizId = quizId;
 		this.title = title;
 		this.questions = questions;
 	}
@@ -35,6 +37,7 @@ public class QuizFetchRes {
 
 		return QuizFetchRes.builder()
 			.fetch(true)
+			.quizId(quiz.id())
 			.title(quiz.title())
 			.questions(questions)
 			.build();
