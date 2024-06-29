@@ -22,7 +22,6 @@ public class QuestionServ {
 		if (quiz == null) return QuestionCreateRes.fail("quiz not found");
 		if (!quiz.user().id().equals(currentUser.id())) return QuestionCreateRes.fail("quiz not found");
 
-
 		Long number = 1L;
 		for (Question q : quiz.questions()) {
 			if (q.number() >= number) {
@@ -37,6 +36,22 @@ public class QuestionServ {
 		question = questionRepo.save(question);
 
 		return QuestionCreateRes.success(question);
+	}
+
+	@Transactional
+	public QuestionUpdateRes update(QuestionUpdateReq req, User currentUser) {
+		if (currentUser == null) return QuestionUpdateRes.fail("not logged in");
+
+		Quiz quiz = quizRepo.findOneById(req.quizId());
+		if (quiz == null) return QuestionUpdateRes.fail("question not found");
+		if (!quiz.user().id().equals(currentUser.id())) return QuestionUpdateRes.fail("question not found");
+
+		Question question = questionRepo.findOneById(req.questionId());
+		if (question == null) return QuestionUpdateRes.fail("question not found");
+
+		question.update(req.text());
+
+		return QuestionUpdateRes.success(question);
 	}
 
 }

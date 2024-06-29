@@ -13,7 +13,7 @@ public class QuizCont {
 
 	private final QuizServ quizServ;
 
-	@PostMapping()
+	@PostMapping
 	public QuizCreateRes create(@CurrentUser User currentUser) {
 		return quizServ.create(currentUser);
 	}

@@ -270,25 +270,55 @@
 
 					fetchquizForm.addEventListener("submit", event => {
 						event.preventDefault();
+						fetchquizMessage.innerHTML = null;
 
 						fetch(`/quiz/${fetchquizId.value}`)
 							.then(res => res.json())
 							.then(json => {
 								if (json.fetch) {
-									fetchquizMessage.innerHTML = `
-										<div>quizId = ${json.quizId}</div>
-										<div>title = ${json.title}</div>
-										<ul>
-											${json.questions.map(q => {
-												return "<li>" + q.questionId + ": " + q.text + "</li>";
-											}).join("")}
-										</ul>
-									`;
+									const id = document.createElement("div");
+									id.textContent = `quizId = ${json.quizId}`;
+									const title = document.createElement("div");
+									title.textContent = `title = ${json.title}`;
+
+									const list = document.createElement("ul");
+									json.questions.forEach(question => {
+										const item = document.createElement("li");
+										const span = document.createElement("span");
+										span.textContent = `${question.questionId}: ${question.text}`;
+										const button = document.createElement("button");
+										button.textContent = "edit";
+										button.addEventListener("click", event => {
+											const text = prompt("question text?", question.text);
+											fetch("/question", {
+												method: "PUT",
+												headers: {"content-type": "application/json"},
+												body: JSON.stringify({
+													quizId: json.quizId,
+													questionId: question.questionId,
+													text,
+												}),
+											})
+												.then(res => res.json())
+												.then(update => {
+													span.textContent = `${question.questionId}: ${update.text}`;
+												});
+										});
+
+										item.appendChild(span);
+										item.appendChild(button);
+										list.appendChild(item);
+									});
+
+									fetchquizMessage.appendChild(id);
+									fetchquizMessage.appendChild(title)
+									fetchquizMessage.appendChild(list);
 								} else {
 									fetchquizMessage.textContent = json.message;
 								}
 							})
-							.catch(() => fetchquizMessage.textContent = "error!");
+												.catch(console.error);
+							//.catch(() => fetchquizMessage.textContent = "error!");
 					});
 				</script>
 			</section>

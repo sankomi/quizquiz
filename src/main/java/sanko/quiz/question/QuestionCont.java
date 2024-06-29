@@ -13,12 +13,20 @@ public class QuestionCont {
 
 	private final QuestionServ questionServ;
 
-	@PostMapping()
+	@PostMapping
 	public QuestionCreateRes create(
 		@RequestBody QuestionCreateReq req,
 		@CurrentUser User currentUser
 	) {
 		return questionServ.create(req, currentUser);
+	}
+
+	@PutMapping
+	public QuestionUpdateRes update(
+		@RequestBody QuestionUpdateReq req,
+		@CurrentUser User currentUser
+	) {
+		return questionServ.update(req, currentUser);
 	}
 
 }

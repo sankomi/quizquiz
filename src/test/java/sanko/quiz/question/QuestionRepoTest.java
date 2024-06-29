@@ -19,6 +19,7 @@ class QuestionRepoTest {
 	@Test
 	void testQuestionSave() {
 		//given
+		Long number = 1L;
 		String text = "text";
 		String title = "title";
 		String username = "username";
@@ -36,6 +37,7 @@ class QuestionRepoTest {
 
 		Question question = Question.builder()
 			.quiz(quiz)
+			.number(number)
 			.text(text)
 			.build();
 

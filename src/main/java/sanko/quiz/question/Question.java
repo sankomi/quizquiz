@@ -33,4 +33,8 @@ public class Question {
 		this.text = text;
 	}
 
+	public void update(String text) {
+		this.text = text;
+	}
+
 }

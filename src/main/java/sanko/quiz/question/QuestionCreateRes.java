@@ -14,11 +14,11 @@ public class QuestionCreateRes {
 	private Long number;
 
 	@Builder
-	public QuestionCreateRes(boolean create, Long questionId, Long number, String message) {
+	public QuestionCreateRes(boolean create, String message, Long questionId, Long number) {
 		this.create = create;
+		this.message = message;
 		this.questionId = questionId;
 		this.number = number;
-		this.message = message;
 	}
 
 	public static QuestionCreateRes success(Question question) {

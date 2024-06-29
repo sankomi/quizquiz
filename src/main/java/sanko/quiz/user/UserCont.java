@@ -12,7 +12,7 @@ public class UserCont {
 
 	private final UserServ userServ;
 
-	@PostMapping()
+	@PostMapping
 	public UserCreateRes create(
 		@RequestBody UserCreateReq req,
 		@CurrentUser User currentUser

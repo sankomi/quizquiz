@@ -12,6 +12,7 @@ class QuestionTest {
 	@Test
 	void testNewQuestion() {
 		//given
+		Long number = 1L;
 		String text = "text";
 		String title = "title";
 		String username = "username";
@@ -30,10 +31,12 @@ class QuestionTest {
 		//when
 		Question question = Question.builder()
 			.quiz(quiz)
+			.number(number)
 			.text(text)
 			.build();
 
 		//then
+		assertEquals(number, question.number());
 		assertEquals(text, question.text());
 		assertEquals(username, question.quiz().user().username());
 	}
