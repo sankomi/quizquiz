@@ -7,7 +7,7 @@ import lombok.*; //Getter, Builder
 import lombok.experimental.Accessors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import sanko.quiz.question.*; //Question, QuestionFetchRes
+import sanko.quiz.question.QuestionFetchRes;
 
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)

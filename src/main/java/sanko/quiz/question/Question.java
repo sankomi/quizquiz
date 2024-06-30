@@ -1,11 +1,13 @@
 package sanko.quiz.question;
 
-import jakarta.persistence.*; //Entity, Table, Id, Column, GeneratedValue, GenerationType, JoinColumn, ManyToOne
+import java.util.Set;
+import jakarta.persistence.*; //Entity, Table, Id, Column, GeneratedValue, GenerationType, JoinColumn, ManyToOne, OneToMany, OrderBy
 
 import lombok.*; //NoArgsConstructor, Getter, Builder
 import lombok.experimental.Accessors;
 
 import sanko.quiz.quiz.Quiz;
+import sanko.quiz.answer.Answer;
 
 @NoArgsConstructor
 @Accessors(fluent = true)
@@ -26,6 +28,10 @@ public class Question {
 
 	private String text;
 
+	@OneToMany(mappedBy = "question")
+	@OrderBy("number ASC")
+	private Set<Answer> answers;
+
 	@Builder
 	public Question(Quiz quiz, Long number, String text) {
 		this.quiz = quiz;
@@ -35,6 +41,10 @@ public class Question {
 
 	public void update(String text) {
 		this.text = text;
+	}
+
+	public void addAnswers(Set<Answer> answers) {
+		this.answers = answers;
 	}
 
 }
