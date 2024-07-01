@@ -2,7 +2,6 @@ package sanko.quiz.question;
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.junit.jupiter.api.Test;
 
 import sanko.quiz.user.User;

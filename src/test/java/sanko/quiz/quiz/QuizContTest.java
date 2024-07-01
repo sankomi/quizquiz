@@ -14,7 +14,6 @@ import sanko.quiz.session.SessionServ;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*; //post, put, delete
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*; //status, jsonPath
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.mockito.Mockito.*; //when, verify, times
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -98,9 +97,7 @@ class QuizContTest {
 			.thenReturn(QuizFetchRes.success(quiz));
 
 		//when
-		ResultActions res = mockMvc.perform(
-			get("/quiz/" + String.valueOf(quizId))
-		);
+		ResultActions res = mockMvc.perform(get("/quiz/" + String.valueOf(quizId)));
 
 		//then
 		res.andExpect(status().isOk())
@@ -109,6 +106,54 @@ class QuizContTest {
 			.andExpect(jsonPath("$.title").value(title));
 
 		verify(quizServ, times(1)).fetch(eq(quizId), eq(user));
+		verify(sessionServ, times(1)).getUser();
+	}
+
+	@Test
+	void testQuizUpdate() throws Exception {
+		//given
+		Long userId = 1L;
+		Long quizId = 2L;
+		String title = "title";
+		String username = "username";
+		String key = "key";
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+		setField(user, "id", userId);
+
+		Quiz quiz = Quiz.builder()
+			.user(user)
+			.build();
+		setField(quiz, "id", quizId);
+		setField(quiz, "title", title);
+
+		QuizUpdateReq req = QuizUpdateReq.builder()
+			.quizId(quizId)
+			.title(title)
+			.build();
+
+		when(sessionServ.getUser())
+			.thenReturn(user);
+
+		when(quizServ.update(any(QuizUpdateReq.class), eq(user)))
+			.thenReturn(QuizUpdateRes.success(quiz));
+
+		//when
+		ResultActions res = mockMvc.perform(
+			put("/quiz")
+				.contentType("application/json")
+				.content(new ObjectMapper().writeValueAsString(req))
+		);
+
+		//then
+		res.andExpect(status().isOk())
+			.andExpect(jsonPath("$.update").value("true"))
+			.andExpect(jsonPath("$.title").value(title));
+
+		verify(quizServ, times(1)).update(any(QuizUpdateReq.class), eq(user));
 		verify(sessionServ, times(1)).getUser();
 	}
 

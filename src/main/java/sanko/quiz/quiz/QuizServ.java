@@ -33,4 +33,15 @@ public class QuizServ {
 		return QuizFetchRes.success(quiz);
 	}
 
+	public QuizUpdateRes update(QuizUpdateReq req, User currentUser) {
+		if (currentUser == null) return QuizUpdateRes.fail("not logged in");
+
+		Quiz quiz = quizRepo.findOneByIdAndUser(req.quizId(), currentUser);
+		if (quiz == null) return QuizUpdateRes.fail("not found");
+
+		quiz.update(req.title());
+
+		return QuizUpdateRes.success(quiz);
+	}
+
 }

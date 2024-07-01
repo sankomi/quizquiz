@@ -15,7 +15,6 @@ import sanko.quiz.session.SessionServ;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*; //post, put
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*; //status, jsonPath
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.mockito.Mockito.*; //when, verify, times
 import static org.mockito.ArgumentMatchers.*; //any, eq
 import static org.springframework.test.util.ReflectionTestUtils.setField;

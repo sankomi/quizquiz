@@ -26,4 +26,12 @@ public class QuizCont {
 		return quizServ.fetch(quizId, currentUser);
 	}
 
+	@PutMapping
+	public QuizUpdateRes update(
+		@RequestBody QuizUpdateReq req,
+		@CurrentUser User currentUser
+	) {
+		return quizServ.update(req, currentUser);
+	}
+
 }

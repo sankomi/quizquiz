@@ -141,4 +141,45 @@ class QuizServTest {
 		verify(quizRepo, times(1)).findOneByIdAndUser(eq(quizId), eq(user));
 	}
 
+	@Test
+	void testQuizUpdate() {
+		//given
+		Long userId = 1L;
+		Long quizId = 2L;
+		String title = "title";
+		String username = "username";
+		String key = "key";
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+		setField(user, "id", userId);
+
+		Quiz quiz = Quiz.builder()
+			.user(user)
+			.title(title)
+			.build();
+		setField(quiz, "id", quizId);
+		setField(quiz, "questions", Set.of());
+
+		QuizUpdateReq req = QuizUpdateReq.builder()
+			.quizId(quizId)
+			.title(title)
+			.build();
+
+		when(quizRepo.findOneByIdAndUser(eq(quizId), eq(user)))
+			.thenReturn(quiz);
+
+		//when
+		QuizUpdateRes res = quizServ.update(req, user);
+
+		//then
+		assertTrue(res.update());
+		assertNull(res.message());
+		assertEquals(title, res.title());
+
+		verify(quizRepo, times(1)).findOneByIdAndUser(eq(quizId), eq(user));
+	}
+
 }

@@ -279,7 +279,31 @@
 									const id = document.createElement("div");
 									id.textContent = `quizId = ${json.quizId}`;
 									const title = document.createElement("div");
-									title.textContent = `title = ${json.title}`;
+									const titlespan = document.createElement("span");
+									titlespan.textContent = `title: ${json.title}`;
+									const titlebutton = document.createElement("button");
+									titlebutton.textContent = "edit";
+									titlebutton.addEventListener("click", event => {
+										const string = prompt("question text?", json.title);
+										if (!string) return;
+
+										fetch("/quiz", {
+											method: "PUT",
+											headers: {"content-type": "application/json"},
+											body: JSON.stringify({
+												quizId: json.quizId,
+												title: string,
+											}),
+										})
+											.then(res => res.json())
+											.then(update => {
+												json.title = update.title;
+												titlespan.textContent = `title: ${update.title}`;
+											});
+									});
+
+									title.appendChild(titlespan);
+									title.appendChild(titlebutton);
 
 									const list = document.createElement("ul");
 									json.questions.forEach(question => {
@@ -290,6 +314,8 @@
 										button.textContent = "edit";
 										button.addEventListener("click", event => {
 											const text = prompt("question text?", question.text);
+											if (!text) return;
+
 											fetch("/question", {
 												method: "PUT",
 												headers: {"content-type": "application/json"},
@@ -301,12 +327,50 @@
 											})
 												.then(res => res.json())
 												.then(update => {
+													question.text = update.text;
 													span.textContent = `${question.questionId}: ${update.text}`;
 												});
 										});
 
+										const sublist = document.createElement("ul");
+										question.answers.forEach(answer => {
+											const subitem = document.createElement("li");
+											const subspan = document.createElement("span");
+											subspan.textContent = `${answer.answerId}: ${answer.text}` + (answer.correct? " v": "");
+											const subbutton = document.createElement("button");
+											subbutton.textContent = "edit";
+											subbutton.addEventListener("click", event => {
+												const subtext = prompt("answer text?", answer.text);
+												if (!subtext) return;
+
+												const correct = confirm("correct answer?");
+												fetch("/answer", {
+													method: "PUT",
+													headers: {"content-type": "application/json"},
+													body: JSON.stringify({
+														quizId: json.quizId,
+														questionId: question.questionId,
+														answerId: answer.answerId,
+														text: subtext,
+														correct,
+													}),
+												})
+													.then(res => res.json())
+													.then(update => {
+														answer.text = update.text;
+														answer.correct = update.correct;
+														subspan.textContent = `${answer.answerId}: ${update.text}` + (update.correct? " v": "");
+													});
+											});
+
+											subitem.appendChild(subspan);
+											subitem.appendChild(subbutton);
+											sublist.appendChild(subitem);
+										});
+
 										item.appendChild(span);
 										item.appendChild(button);
+										item.appendChild(sublist);
 										list.appendChild(item);
 									});
 
