@@ -1,4 +1,4 @@
-package sanko.quiz.question;
+package sanko.quiz.answer;
 
 import java.util.Set;
 
@@ -11,19 +11,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import sanko.quiz.user.User;
 import sanko.quiz.quiz.*; //Quiz, QuizRepo
-import sanko.quiz.answer.AnswerRepo;
+import sanko.quiz.question.*; //Question, QuestionRepo
 
-import static org.mockito.Mockito.*; //when, verify, times, never
+import static org.mockito.Mockito.*; //when, verify, times
 import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.*; //assertTrue, assertFalse, assertNull, assertEquals
+import static org.junit.jupiter.api.Assertions.*; //assertTrue, assertNull, assertEquals
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(SpringExtension.class)
-@Import(QuestionServ.class)
-class QuestionServTest {
+@Import(AnswerServ.class)
+class AnswerServTest {
 
 	@Autowired
-	private QuestionServ questionServ;
+	private AnswerServ answerServ;
 
 	@MockBean
 	private QuizRepo quizRepo;
@@ -35,52 +35,15 @@ class QuestionServTest {
 	private AnswerRepo answerRepo;
 
 	@Test
-	void testQuestionCreate() {
-		//given
-		Long userId = 1L;
-		Long quizId = 2L;
-		String username = "username";
-		String key = "key";
-
-		User user = User.builder()
-			.username(username)
-			.key(key)
-			.build();
-		setField(user, "id", userId);
-
-		Quiz quiz = Quiz.builder()
-			.user(user)
-			.build();
-		setField(quiz, "questions", Set.of());
-
-		QuestionCreateReq req = QuestionCreateReq.builder()
-			.quizId(quizId)
-			.build();
-
-		when(quizRepo.findOneById(eq(quizId)))
-			.thenReturn(quiz);
-
-		when(questionRepo.save(any(Question.class)))
-			.thenAnswer(inv -> inv.getArguments()[0]);
-
-		//when
-		QuestionCreateRes res = questionServ.create(req, user);
-
-		//then
-		assertTrue(res.create());
-		assertNull(res.message());
-
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
-		verify(questionRepo, times(1)).save(any(Question.class));
-	}
-
-	@Test
-	void testQuestionUpdate() {
+	void testAnswerUpdate() {
 		//given
 		Long userId = 1L;
 		Long quizId = 2L;
 		Long questionId = 3L;
+		Long answerId = 4L;
+		Long number = 3L;
 		String text = "text";
+		Boolean correct = true;
 		String username = "username";
 		String key = "key";
 
@@ -101,10 +64,19 @@ class QuestionServTest {
 			.build();
 		setField(question, "id", questionId);
 
-		QuestionUpdateReq req = QuestionUpdateReq.builder()
+		Answer answer = Answer.builder()
+			.question(question)
+			.number(number)
+			.text(text)
+			.correct(correct)
+			.build();
+
+		AnswerUpdateReq req = AnswerUpdateReq.builder()
 			.quizId(quizId)
 			.questionId(questionId)
+			.answerId(answerId)
 			.text(text)
+			.correct(correct)
 			.build();
 
 		when(quizRepo.findOneById(eq(quizId)))
@@ -113,16 +85,21 @@ class QuestionServTest {
 		when(questionRepo.findOneById(eq(questionId)))
 			.thenReturn(question);
 
+		when(answerRepo.findOneById(eq(answerId)))
+			.thenReturn(answer);
+
 		//when
-		QuestionUpdateRes res = questionServ.update(req, user);
+		AnswerUpdateRes res = answerServ.update(req, user);
 
 		//then
 		assertTrue(res.update());
 		assertNull(res.message());
 		assertEquals(text, res.text());
+		assertEquals(correct, res.correct());
 
 		verify(quizRepo, times(1)).findOneById(eq(quizId));
 		verify(questionRepo, times(1)).findOneById(eq(questionId));
+		verify(answerRepo, times(1)).findOneById(eq(answerId));
 	}
 
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import sanko.quiz.Const;
 import sanko.quiz.user.User;
 
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ public class QuizServ {
 
 	@Transactional
 	public QuizCreateRes create(User currentUser) {
-		if (currentUser == null) return QuizCreateRes.fail("not logged in");
+		if (currentUser == null) return QuizCreateRes.fail(Const.NOT_LOGGED_IN);
 
 		Quiz quiz = Quiz.builder()
 			.user(currentUser)
@@ -25,19 +26,21 @@ public class QuizServ {
 	}
 
 	public QuizFetchRes fetch(Long quizId, User currentUser) {
-		if (currentUser == null) return QuizFetchRes.fail("not logged in");
+		if (currentUser == null) return QuizFetchRes.fail(Const.NOT_LOGGED_IN);
 
-		Quiz quiz = quizRepo.findOneByIdAndUser(quizId, currentUser);
-		if (quiz == null) return QuizFetchRes.fail("not found");
+		Quiz quiz = quizRepo.findOneById(quizId);
+		if (quiz == null) return QuizFetchRes.fail(Const.NOT_FOUND);
+		if (!quiz.user().id().equals(currentUser.id())) return QuizFetchRes.fail(Const.NOT_FOUND);
 
 		return QuizFetchRes.success(quiz);
 	}
 
 	public QuizUpdateRes update(QuizUpdateReq req, User currentUser) {
-		if (currentUser == null) return QuizUpdateRes.fail("not logged in");
+		if (currentUser == null) return QuizUpdateRes.fail(Const.NOT_LOGGED_IN);
 
-		Quiz quiz = quizRepo.findOneByIdAndUser(req.quizId(), currentUser);
-		if (quiz == null) return QuizUpdateRes.fail("not found");
+		Quiz quiz = quizRepo.findOneById(req.quizId());
+		if (quiz == null) return QuizUpdateRes.fail(Const.NOT_FOUND);
+		if (!quiz.user().id().equals(currentUser.id())) return QuizUpdateRes.fail(Const.NOT_FOUND);
 
 		quiz.update(req.title());
 

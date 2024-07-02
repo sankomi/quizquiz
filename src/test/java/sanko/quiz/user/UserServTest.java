@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import sanko.quiz.Const;
 import sanko.quiz.session.SessionServ;
 
 import static org.mockito.Mockito.*; //when, verify, times, never
@@ -96,7 +97,7 @@ class UserServTest {
 
 		//then
 		assertFalse(res.create());
-		assertEquals("already logged in", res.message());
+		assertEquals(Const.ALREADY_LOGGED_IN, res.message());
 
 		verify(userRepo, never()).findOneByUsername(anyString());
 		verify(userRepo, never()).save(any(User.class));
@@ -129,7 +130,7 @@ class UserServTest {
 		assertFalse(res.create());
 		assertNull(res.key());
 		assertNull(res.image());
-		assertEquals("username exists", res.message());
+		assertEquals(Const.USERNAME_EXISTS, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(userRepo, never()).save(any(User.class));
@@ -198,7 +199,7 @@ class UserServTest {
 
 		//then
 		assertFalse(res.verify());
-		assertEquals("already logged in", res.message());
+		assertEquals(Const.ALREADY_LOGGED_IN, res.message());
 
 		verify(userRepo, never()).findOneByUsername(anyString());
 		verify(passwordServ, never()).verify(anyString(), anyString());
@@ -226,7 +227,7 @@ class UserServTest {
 
 		//then
 		assertFalse(res.verify());
-		assertEquals("username not found", res.message());
+		assertEquals(Const.NOT_FOUND, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(passwordServ, never()).verify(anyString(), anyString());
@@ -262,7 +263,7 @@ class UserServTest {
 
 		//then
 		assertFalse(res.verify());
-		assertEquals("password incorrect", res.message());
+		assertEquals(Const.PASSWORD_INCORRECT, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(passwordServ, times(1)).verify(eq(key), eq(password));
@@ -329,7 +330,7 @@ class UserServTest {
 
 		//then
 		assertFalse(res.login());
-		assertEquals("already logged in", res.message());
+		assertEquals(Const.ALREADY_LOGGED_IN, res.message());
 
 		verify(userRepo, never()).findOneByUsername(anyString());
 		verify(passwordServ, never()).verify(anyString(), anyString());
@@ -356,7 +357,7 @@ class UserServTest {
 
 		//then
 		assertFalse(res.login());
-		assertEquals("username not found", res.message());
+		assertEquals(Const.NOT_FOUND, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(anyString());
 		verify(passwordServ, never()).verify(anyString(), anyString());
@@ -389,7 +390,7 @@ class UserServTest {
 
 		//then
 		assertFalse(res.login());
-		assertEquals("user not verified", res.message());
+		assertEquals(Const.NOT_VERIFIED, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(anyString());
 		verify(passwordServ, never()).verify(anyString(), anyString());
@@ -425,7 +426,7 @@ class UserServTest {
 
 		//then
 		assertFalse(res.login());
-		assertEquals("password incorrect", res.message());
+		assertEquals(Const.PASSWORD_INCORRECT, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
 		verify(passwordServ, times(1)).verify(eq(key), eq(password));
@@ -463,7 +464,7 @@ class UserServTest {
 
 		//then
 		assertFalse(res.logout());
-		assertEquals("not logged in", res.message());
+		assertEquals(Const.NOT_LOGGED_IN, res.message());
 
 		verify(sessionServ, never()).removeUser();
 	}

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import sanko.quiz.Const;
 import sanko.quiz.user.User;
 
 import static org.mockito.Mockito.*; //when, verify, times, never
@@ -71,7 +72,7 @@ class QuizServTest {
 
 		//then
 		assertFalse(res.create());
-		assertEquals("not logged in", res.message());
+		assertEquals(Const.NOT_LOGGED_IN, res.message());
 
 		verify(quizRepo, never()).save(any(Quiz.class));
 	}
@@ -98,7 +99,7 @@ class QuizServTest {
 		setField(quiz, "id", quizId);
 		setField(quiz, "questions", Set.of());
 
-		when(quizRepo.findOneByIdAndUser(eq(quizId), eq(user)))
+		when(quizRepo.findOneById(eq(quizId)))
 			.thenReturn(quiz);
 
 		//when
@@ -109,7 +110,7 @@ class QuizServTest {
 		assertNull(res.message());
 		assertEquals(title, res.title());
 
-		verify(quizRepo, times(1)).findOneByIdAndUser(eq(quizId), eq(user));
+		verify(quizRepo, times(1)).findOneById(eq(quizId));
 	}
 
 	@Test
@@ -127,7 +128,7 @@ class QuizServTest {
 			.build();
 		setField(user, "id", userId);
 
-		when(quizRepo.findOneByIdAndUser(eq(quizId), eq(user)))
+		when(quizRepo.findOneById(eq(quizId)))
 			.thenReturn(null);
 
 		//when
@@ -135,10 +136,10 @@ class QuizServTest {
 
 		//then
 		assertFalse(res.fetch());
-		assertEquals("not found", res.message());
+		assertEquals(Const.NOT_FOUND, res.message());
 		assertNull(res.title());
 
-		verify(quizRepo, times(1)).findOneByIdAndUser(eq(quizId), eq(user));
+		verify(quizRepo, times(1)).findOneById(eq(quizId));
 	}
 
 	@Test
@@ -168,7 +169,7 @@ class QuizServTest {
 			.title(title)
 			.build();
 
-		when(quizRepo.findOneByIdAndUser(eq(quizId), eq(user)))
+		when(quizRepo.findOneById(eq(quizId)))
 			.thenReturn(quiz);
 
 		//when
@@ -179,7 +180,41 @@ class QuizServTest {
 		assertNull(res.message());
 		assertEquals(title, res.title());
 
-		verify(quizRepo, times(1)).findOneByIdAndUser(eq(quizId), eq(user));
+		verify(quizRepo, times(1)).findOneById(eq(quizId));
+	}
+
+	@Test
+	void testQuizUpdateNotFound() {
+		//given
+		Long userId = 1L;
+		Long quizId = 2L;
+		String title = "title";
+		String username = "username";
+		String key = "key";
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+		setField(user, "id", userId);
+
+		QuizUpdateReq req = QuizUpdateReq.builder()
+			.quizId(quizId)
+			.title(title)
+			.build();
+
+		when(quizRepo.findOneById(eq(quizId)))
+			.thenReturn(null);
+
+		//when
+		QuizUpdateRes res = quizServ.update(req, user);
+
+		//then
+		assertFalse(res.update());
+		assertEquals(Const.NOT_FOUND, res.message());
+		assertNull(res.title());
+
+		verify(quizRepo, times(1)).findOneById(eq(quizId));
 	}
 
 }

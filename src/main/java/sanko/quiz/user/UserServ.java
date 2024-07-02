@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import sanko.quiz.Const;
 import sanko.quiz.session.SessionServ;
 
 @RequiredArgsConstructor
@@ -18,10 +19,10 @@ public class UserServ {
 
 	@Transactional
 	public UserCreateRes create(UserCreateReq req, User currentUser) {
-		if (currentUser != null) return UserCreateRes.fail("already logged in");
+		if (currentUser != null) return UserCreateRes.fail(Const.ALREADY_LOGGED_IN);
 
 		User exist = userRepo.findOneByUsername(req.username());
-		if (exist != null) return UserCreateRes.fail("username exists");
+		if (exist != null) return UserCreateRes.fail(Const.USERNAME_EXISTS);
 
 		String key = passwordServ.createKey();
 		User user = User.builder()
@@ -38,12 +39,12 @@ public class UserServ {
 
 	@Transactional
 	public UserVerifyRes verify(UserVerifyReq req, User currentUser) {
-		if (currentUser != null) return UserVerifyRes.fail("already logged in");
+		if (currentUser != null) return UserVerifyRes.fail(Const.ALREADY_LOGGED_IN);
 		User user = userRepo.findOneByUsername(req.username());
 
-		if (user == null) return UserVerifyRes.fail("username not found");
+		if (user == null) return UserVerifyRes.fail(Const.NOT_FOUND);
 		if (!passwordServ.verify(user.key(), req.password())) {
-			return UserVerifyRes.fail("password incorrect");
+			return UserVerifyRes.fail(Const.PASSWORD_INCORRECT);
 		}
 
 		user.verify();
@@ -54,14 +55,14 @@ public class UserServ {
 	}
 
 	public UserLoginRes login(UserLoginReq req, User currentUser) {
-		if (currentUser != null) return UserLoginRes.fail("already logged in");
+		if (currentUser != null) return UserLoginRes.fail(Const.ALREADY_LOGGED_IN);
 
 		User user = userRepo.findOneByUsername(req.username());
 
-		if (user == null) return UserLoginRes.fail("username not found");
-		if (!user.verified()) return UserLoginRes.fail("user not verified");
+		if (user == null) return UserLoginRes.fail(Const.NOT_FOUND);
+		if (!user.verified()) return UserLoginRes.fail(Const.NOT_VERIFIED);
 		if (!passwordServ.verify(user.key(), req.password())) {
-			return UserLoginRes.fail("password incorrect");
+			return UserLoginRes.fail(Const.PASSWORD_INCORRECT);
 		}
 
 		sessionServ.setUser(user);
@@ -69,7 +70,7 @@ public class UserServ {
 	}
 
 	public UserLogoutRes logout(User currentUser) {
-		if (currentUser == null) return UserLogoutRes.fail("not logged in");
+		if (currentUser == null) return UserLogoutRes.fail(Const.NOT_LOGGED_IN);
 
 		sessionServ.removeUser();
 
