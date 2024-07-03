@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex">
+
+		<title>quizquiz</title>
+
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			html {
+				height: 100%;
+				font-family: monospace;
+			}
+			body {
+				max-width: 80rem;
+				height: 100%;
+				padding: 1rem;
+				margin: 0 auto;
+			}
+
+			h1, h2 {
+				margin: 0.5rem 0;
+				text-align: center;
+			}
+
+			.app {
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+			}
+			.answers {
+				flex-grow: 1;
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				grid-template-rows: 1fr 1fr;
+				gap: 2rem;
+				padding: 0;
+				list-style-type: none;
+			}
+			.answer {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				border: 1px solid #ddd;
+				cursor: pointer;
+				transition: background-color 0.5s;
+			}
+			.answer.answer--correct {
+				background-color: #efe;
+			}
+			.answer.answer--incorrect {
+				background-color: #fee;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" class="app"></div>
+
+		<script>
+			(async function play() {
+				const app = document.getElementById("app");
+
+				const title = document.createElement("h1");
+				title.textContent = "loading quiz...";
+				app.appendChild(title);
+
+				const questionText = document.createElement("h2");
+				app.appendChild(questionText);
+
+				const list = document.createElement("ol");
+				list.classList.add("answers");
+				app.appendChild(list);
+
+				const answers = [];
+				const answerTexts = [];
+				for (let i = 0; i < 4; i++) {
+					const answer = document.createElement("li");
+					answer.classList.add("answer");
+					answers.push(answer);
+
+					const answerText = document.createElement("div");
+					answer.appendChild(answerText);
+					answerTexts.push(answerText);
+
+					list.appendChild(answer);
+				}
+
+				const urlParams = new URLSearchParams(window.location.search);
+				const quizId = urlParams.get("id");
+				const quiz = await fetch(`/quiz/${quizId}`)
+					.then(res => res.json())
+					.catch(console.error);
+
+				if (!quiz) {
+					title.textContent = "error!";
+					return;
+				} else if (!quiz.fetch) {
+					title.textContent = quiz.message;
+					return;
+				}
+
+				title.textContent = quiz.title;
+				const questions = quiz.questions.sort(sortByNumber);
+				questions.forEach(question => {
+					question.answers = question.answers.sort(sortByNumber);
+				});
+
+				let current = -1;
+				let checking = false;
+				let complete = false;
+				let question;
+				let score = 0;
+
+				nextQuestion();
+
+				for (let i = 0; i < 4; i++) {
+					answers[i].addEventListener("click", () => selectOption(i));
+				}
+
+				function selectOption(i) {
+					if (complete) return;
+
+					if (!checking) {
+						checking = true;
+
+						if (question.answers[i].correct) {
+							score++;
+							answers[i].classList.add("answer--correct");
+							answerTexts[i].textContent = "correct!";
+						} else {
+							answers[i].classList.add("answer--incorrect");
+							answerTexts[i].textContent = "incorrect!";
+						}
+
+						setTimeout(() => {
+							checking = false;
+							nextQuestion();
+						}, 1000);
+					}
+				}
+
+				function nextQuestion() {
+					current++;
+
+					if (current >= questions.length) {
+						complete = true;
+						questionText.textContent = `score ${Math.floor(100 * score / questions.length)}% (${score}/${questions.length})`;
+					} else {
+						question = questions[current];
+						displayQuestion(question);
+					}
+				}
+
+				function displayQuestion(question) {
+					questionText.textContent = question.text;
+					question.answers.forEach((answer, i) => {
+						answers[i].classList.remove("answer--correct");
+						answers[i].classList.remove("answer--incorrect");
+						answerTexts[i].textContent = answer.text;
+					});
+				}
+			})();
+
+			function sortByNumber(o1, o2) {
+				return o1.number - o2.number;
+			}
+		</script>
+	</body>
+</html>
