@@ -280,12 +280,13 @@
 									id.textContent = `quizId = ${json.quizId}`;
 									const title = document.createElement("div");
 									const titlespan = document.createElement("span");
-									titlespan.textContent = `title: ${json.title}`;
+									titlespan.textContent = `${json.title} ${json.open? "(open)": ""}`;
 									const titlebutton = document.createElement("button");
 									titlebutton.textContent = "edit";
 									titlebutton.addEventListener("click", event => {
-										const string = prompt("question text?", json.title);
+										const string = prompt("quiz title?", json.title);
 										if (!string) return;
+										const open = confirm("open quiz?");
 
 										fetch("/quiz", {
 											method: "PUT",
@@ -293,12 +294,13 @@
 											body: JSON.stringify({
 												quizId: json.quizId,
 												title: string,
+												open,
 											}),
 										})
 											.then(res => res.json())
 											.then(update => {
 												json.title = update.title;
-												titlespan.textContent = `title: ${update.title}`;
+												titlespan.textContent = `${update.title} ${update.open? "(open)": ""}`;
 											});
 									});
 

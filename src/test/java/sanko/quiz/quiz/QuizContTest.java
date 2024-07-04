@@ -115,6 +115,7 @@ class QuizContTest {
 		Long userId = 1L;
 		Long quizId = 2L;
 		String title = "title";
+		Boolean open = true;
 		String username = "username";
 		String key = "key";
 
@@ -129,10 +130,12 @@ class QuizContTest {
 			.build();
 		setField(quiz, "id", quizId);
 		setField(quiz, "title", title);
+		setField(quiz, "open", open);
 
 		QuizUpdateReq req = QuizUpdateReq.builder()
 			.quizId(quizId)
 			.title(title)
+			.open(open)
 			.build();
 
 		when(sessionServ.getUser())
@@ -151,7 +154,8 @@ class QuizContTest {
 		//then
 		res.andExpect(status().isOk())
 			.andExpect(jsonPath("$.update").value("true"))
-			.andExpect(jsonPath("$.title").value(title));
+			.andExpect(jsonPath("$.title").value(title))
+			.andExpect(jsonPath("$.open").value(open));
 
 		verify(quizServ, times(1)).update(any(QuizUpdateReq.class), eq(user));
 		verify(sessionServ, times(1)).getUser();

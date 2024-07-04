@@ -26,11 +26,15 @@ public class QuizServ {
 	}
 
 	public QuizFetchRes fetch(Long quizId, User currentUser) {
-		if (currentUser == null) return QuizFetchRes.fail(Const.NOT_LOGGED_IN);
-
 		Quiz quiz = quizRepo.findOneById(quizId);
 		if (quiz == null) return QuizFetchRes.fail(Const.NOT_FOUND);
-		if (!quiz.user().id().equals(currentUser.id())) return QuizFetchRes.fail(Const.NOT_FOUND);
+		if (!quiz.open()) {
+			if (currentUser == null) return QuizFetchRes.fail(Const.NOT_FOUND);
+
+			if (!quiz.user().id().equals(currentUser.id())) {
+				return QuizFetchRes.fail(Const.NOT_FOUND);
+			}
+		}
 
 		return QuizFetchRes.success(quiz);
 	}
@@ -42,7 +46,7 @@ public class QuizServ {
 		if (quiz == null) return QuizUpdateRes.fail(Const.NOT_FOUND);
 		if (!quiz.user().id().equals(currentUser.id())) return QuizUpdateRes.fail(Const.NOT_FOUND);
 
-		quiz.update(req.title());
+		quiz.update(req.title(), req.open());
 
 		return QuizUpdateRes.success(quiz);
 	}

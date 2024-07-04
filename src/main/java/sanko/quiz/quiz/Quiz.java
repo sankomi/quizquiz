@@ -31,6 +31,8 @@ public class Quiz {
 	@OrderBy("number ASC")
 	private Set<Question> questions;
 
+	private boolean open;
+
 	@Builder
 	public Quiz(User user, String title) {
 		this.user = user;
@@ -39,6 +41,13 @@ public class Quiz {
 
 	public void update(String title) {
 		this.title = title;
+	}
+
+	public void update(String title, Boolean open) {
+		this.title = title;
+		if (open != null) {
+			this.open = open;
+		}
 	}
 
 }

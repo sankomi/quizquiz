@@ -114,6 +114,79 @@ class QuizServTest {
 	}
 
 	@Test
+	void testQuizFetchNotOpen() {
+		//given
+		Long quizId = 1L;
+		String title = "title";
+		Boolean open = false;
+
+		Quiz quiz = Quiz.builder()
+			.title(title)
+			.build();
+		setField(quiz, "id", quizId);
+		setField(quiz, "questions", Set.of());
+		setField(quiz, "open", open);
+
+		when(quizRepo.findOneById(eq(quizId)))
+			.thenReturn(quiz);
+
+		//when
+		QuizFetchRes res = quizServ.fetch(quizId, null);
+
+		//then
+		assertFalse(res.fetch());
+		assertEquals(Const.NOT_FOUND, res.message());
+		assertNull(res.title());
+
+		verify(quizRepo, times(1)).findOneById(eq(quizId));
+	}
+
+	@Test
+	void testQuizFetchNotUser() {
+		//given
+		Long userId = 1L;
+		Long anotherUserId = 3L;
+		Long quizId = 2L;
+		String title = "title";
+		Boolean open = false;
+		String username = "username";
+		String key = "key";
+
+		User user = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+		setField(user, "id", userId);
+
+		User anotherUser = User.builder()
+			.username(username)
+			.key(key)
+			.build();
+		setField(anotherUser, "id", anotherUserId);
+
+		Quiz quiz = Quiz.builder()
+			.user(anotherUser)
+			.title(title)
+			.build();
+		setField(quiz, "id", quizId);
+		setField(quiz, "questions", Set.of());
+		setField(quiz, "open", open);
+
+		when(quizRepo.findOneById(eq(quizId)))
+			.thenReturn(quiz);
+
+		//when
+		QuizFetchRes res = quizServ.fetch(quizId, user);
+
+		//then
+		assertFalse(res.fetch());
+		assertEquals(Const.NOT_FOUND, res.message());
+		assertNull(res.title());
+
+		verify(quizRepo, times(1)).findOneById(eq(quizId));
+	}
+
+	@Test
 	void testQuizFetchNotFound() {
 		//given
 		Long userId = 1L;
@@ -148,6 +221,7 @@ class QuizServTest {
 		Long userId = 1L;
 		Long quizId = 2L;
 		String title = "title";
+		Boolean open = true;
 		String username = "username";
 		String key = "key";
 
@@ -163,10 +237,12 @@ class QuizServTest {
 			.build();
 		setField(quiz, "id", quizId);
 		setField(quiz, "questions", Set.of());
+		setField(quiz, "open", open);
 
 		QuizUpdateReq req = QuizUpdateReq.builder()
 			.quizId(quizId)
 			.title(title)
+			.open(open)
 			.build();
 
 		when(quizRepo.findOneById(eq(quizId)))
@@ -179,6 +255,7 @@ class QuizServTest {
 		assertTrue(res.update());
 		assertNull(res.message());
 		assertEquals(title, res.title());
+		assertEquals(open, res.open());
 
 		verify(quizRepo, times(1)).findOneById(eq(quizId));
 	}
@@ -189,6 +266,7 @@ class QuizServTest {
 		Long userId = 1L;
 		Long quizId = 2L;
 		String title = "title";
+		Boolean open = true;
 		String username = "username";
 		String key = "key";
 
@@ -201,6 +279,7 @@ class QuizServTest {
 		QuizUpdateReq req = QuizUpdateReq.builder()
 			.quizId(quizId)
 			.title(title)
+			.open(open)
 			.build();
 
 		when(quizRepo.findOneById(eq(quizId)))

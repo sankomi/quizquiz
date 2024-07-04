@@ -19,14 +19,16 @@ public class QuizFetchRes {
 	private Long quizId;
 	private String title;
 	private Set<QuestionFetchRes> questions;
+	private Boolean open;
 
 	@Builder
-	public QuizFetchRes(boolean fetch, String message, Long quizId, String title, Set<QuestionFetchRes> questions) {
+	public QuizFetchRes(boolean fetch, String message, Long quizId, String title, Set<QuestionFetchRes> questions, Boolean open) {
 		this.fetch = fetch;
 		this.message = message;
 		this.quizId = quizId;
 		this.title = title;
 		this.questions = questions;
+		this.open = open;
 	}
 
 	public static QuizFetchRes success(Quiz quiz) {
@@ -40,6 +42,7 @@ public class QuizFetchRes {
 			.quizId(quiz.id())
 			.title(quiz.title())
 			.questions(questions)
+			.open(quiz.open())
 			.build();
 	}
 

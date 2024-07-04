@@ -10,11 +10,13 @@ public class QuizUpdateReq {
 
 	private Long quizId;
 	private String title;
+	private Boolean open;
 
 	@Builder
-	public QuizUpdateReq(Long quizId, String title) {
+	public QuizUpdateReq(Long quizId, String title, Boolean open) {
 		this.quizId = quizId;
 		this.title = title;
+		this.open = open;
 	}
 
 }
