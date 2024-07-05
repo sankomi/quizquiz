@@ -13,6 +13,9 @@ spring:
   web:
     resources:
       static-locations: "file:src/main/resources/static"
+  thymeleaf:
+    prefix: "file:src/main/resources/templates/"
+    cache: false
 
 session:
   datasource:

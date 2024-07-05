@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex">
+
+		<title>logout - quizquiz</title>
+
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	<body>
+		<h1>logout</h1>
+
+		<p id="message"></p>
+
+		<script>
+			const message = document.getElementById("message");
+
+			fetch("/user/login", {
+				method: "DELETE",
+				headers: {"content-type": "application/json"},
+			})
+				.then(res => res.json())
+				.then(json => {
+					if (json.logout) {
+						window.location.href = "/login";
+					} else {
+						message.textContent = json.message;
+					}
+				})
+				.catch(() => message.textContent = "error!");
+		</script>
+	</body>
+</html>

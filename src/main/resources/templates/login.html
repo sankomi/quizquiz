@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex">
+
+		<title>login - quizquiz</title>
+
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	<body>
+		<h1>login</h1>
+
+		<form id="form" class="form">
+			<div class="form__row">
+				<label class="form__label" for="username">username</label>
+				<input id="username"></label>
+			</div>
+			<div class="form__row">
+				<label class="form__label" for="password">password</label>
+				<input id="password"></label>
+			</div>
+			<div class="form__row">
+				<input type="submit" value="login">
+			</div>
+		</form>
+		<p id="message"></p>
+
+		<script>
+			const form = document.getElementById("form");
+			const username = document.getElementById("username");
+			const password = document.getElementById("password");
+			const message = document.getElementById("message");
+
+			form.addEventListener("submit", event => {
+				event.preventDefault();
+
+				fetch("/user/login", {
+					method: "POST",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({
+						username: username.value,
+						password: password.value,
+					}),
+				})
+					.then(res => res.json())
+					.then(json => {
+						if (json.login) {
+							window.location.href = "/list";
+						} else {
+							message.textContent = json.message;
+						}
+					})
+					.catch(() => message.textContent = "error!");
+			});
+		</script>
+	</body>
+</html>

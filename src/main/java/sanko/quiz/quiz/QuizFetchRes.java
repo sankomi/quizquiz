@@ -46,6 +46,14 @@ public class QuizFetchRes {
 			.build();
 	}
 
+	public static QuizFetchRes simple(Quiz quiz) {
+		return QuizFetchRes.builder()
+			.quizId(quiz.id())
+			.title(quiz.title())
+			.open(quiz.open())
+			.build();
+	}
+
 	public static QuizFetchRes fail(String message) {
 		return QuizFetchRes.builder()
 			.fetch(false)

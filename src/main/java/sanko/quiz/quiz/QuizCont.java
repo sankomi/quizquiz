@@ -18,6 +18,11 @@ public class QuizCont {
 		return quizServ.create(currentUser);
 	}
 
+	@GetMapping
+	public QuizListRes list(@CurrentUser User currentUser) {
+		return quizServ.list(currentUser);
+	}
+
 	@GetMapping("/{quizId}")
 	public QuizFetchRes fetch(
 		@PathVariable("quizId") Long quizId,

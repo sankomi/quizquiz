@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex">
+
+		<title>list - quizquiz</title>
+
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	<body>
+		<div class="logout"><a href="/logout">logout</a></div>
+		<h1>list</h1>
+
+		<ul id="list"></ul>
+		<p id="message"></p>
+
+		<script>
+			const list = document.getElementById("list");
+			const message = document.getElementById("message");
+
+			fetch("/quiz")
+				.then(res => res.json())
+				.then(json => {
+					if (json.list) {
+						const quizs = json.quizs;
+						if (!quizs?.length) {
+							message.textContent = "not found";
+							return;
+						}
+
+						quizs.forEach(quiz => {
+							const item = document.createElement("li");
+
+							const title = document.createElement("span");
+							title.textContent = quiz.title;
+
+							const edit = document.createElement("a");
+							edit.textContent = "edit";
+							edit.href = `/edit?id=${quiz.quizId}`;
+
+							const play = document.createElement("a");
+							play.textContent = "play";
+							play.href = `/play.html?id=${quiz.quizId}`;
+
+							item.appendChild(title);
+							item.appendChild(document.createTextNode(" "));
+							item.appendChild(edit);
+							item.appendChild(document.createTextNode(" "));
+							item.appendChild(play);
+							list.appendChild(item);
+						});
+					} else {
+						message.textContent = json.message;
+					}
+				})
+				.catch(() => message.textContent = "error!");
+		</script>
+	</body>
+</html>

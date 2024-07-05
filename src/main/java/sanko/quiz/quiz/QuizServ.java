@@ -1,5 +1,7 @@
 package sanko.quiz.quiz;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,14 @@ public class QuizServ {
 		quiz = quizRepo.save(quiz);
 
 		return QuizCreateRes.success(quiz);
+	}
+
+	public QuizListRes list(User currentUser) {
+		if (currentUser == null) return QuizListRes.fail(Const.NOT_LOGGED_IN);
+
+		List<Quiz> list = quizRepo.findByUser(currentUser);
+
+		return QuizListRes.success(list);
 	}
 
 	public QuizFetchRes fetch(Long quizId, User currentUser) {

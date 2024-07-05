@@ -1,0 +1,16 @@
+* {
+	box-sizing: border-box;
+}
+html {
+	font-family: monospace;
+}
+body {
+	max-width: 80rem;
+	padding: 1rem;
+	margin: 0 auto;
+}
+
+.logout {
+	display: flex;
+	justify-content: flex-end;
+}

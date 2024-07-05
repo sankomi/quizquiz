@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex">
+
+		<title>edit - quizquiz</title>
+
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	<body>
+		<div class="logout"><a href="/logout">logout</a></div>
+		<h1>edit</h1>
+
+		<h2 id="title"></h2>
+		<ul id="list"></ul>
+		<p id="message"></p>
+
+		<script>
+			const title = document.getElementById("title");
+			const list = document.getElementById("list");
+			const message = document.getElementById("message");
+
+			const urlParams = new URLSearchParams(window.location.search);
+			const quizId = urlParams.get("id");
+
+			fetch(`/quiz/${quizId}`)
+				.then(res => res.json())
+				.then(json => {
+					if (json.fetch) {
+						title.textContent = json.title;
+
+						const questions = json.questions;
+						if (!questions?.length) {
+							message.textContent = "no questions";
+							return;
+						}
+
+						questions.forEach(question => {
+							const item = document.createElement("li");
+
+							const text = document.createElement("span");
+							text.textContent = question.text;
+
+							const answerList = document.createElement("ul");
+							question.answers.forEach(answer => {
+								const answerItem = document.createElement("li");
+
+								const answerText = document.createElement("span");
+								answerText.textContent = answer.text + (answer.correct? " - correct": "");
+
+								answerItem.appendChild(answerText);
+								answerList.appendChild(answerItem);
+							});
+
+							item.appendChild(text);
+							item.appendChild(answerList);
+							list.appendChild(item);
+						});
+					} else {
+						message.textContent = json.message;
+					}
+				})
+				.catch(() => message.textContent = "error!");
+		</script>
+	</body>
+</html>

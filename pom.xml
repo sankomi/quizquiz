@@ -79,6 +79,13 @@
 			<version>3.5.3</version>
 		</dependency>
 
+		<!-- template -->
+		<!-- template -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
 		<!-- test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
