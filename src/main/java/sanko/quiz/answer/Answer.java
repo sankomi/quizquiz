@@ -37,8 +37,8 @@ public class Answer {
 	}
 
 	public void update(String text, Boolean correct) {
-		this.text = text;
-		this.correct = correct;
+		if (text != null) this.text = text;
+		if (correct != null) this.correct = correct;
 	}
 
 }

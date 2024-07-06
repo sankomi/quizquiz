@@ -14,55 +14,276 @@
 		<h1>edit</h1>
 
 		<h2 id="title"></h2>
-		<ul id="list"></ul>
+		<div id="questions"></div>
 		<p id="message"></p>
+		<div><button id="reload">reload</button></div>
 
 		<script>
 			const title = document.getElementById("title");
-			const list = document.getElementById("list");
+			const questions = document.getElementById("questions");
 			const message = document.getElementById("message");
+			const reload = document.getElementById("reload");
+			reload.addEventListener("click", loadQuiz);
 
 			const urlParams = new URLSearchParams(window.location.search);
 			const quizId = urlParams.get("id");
 
-			fetch(`/quiz/${quizId}`)
-				.then(res => res.json())
-				.then(json => {
-					if (json.fetch) {
-						title.textContent = json.title;
+			let quiz = null;
+			let fetching = false;
 
-						const questions = json.questions;
-						if (!questions?.length) {
-							message.textContent = "no questions";
-							return;
+			loadQuiz();
+
+			function beginFetch() {
+				if (fetching) return false;
+				fetching = true;
+				title.classList.add("disabled");
+				questions.classList.add("disabled");
+				reload.classList.add("disabled");
+				return true;
+			}
+
+			function endFetch() {
+				title.classList.remove("disabled");
+				questions.classList.remove("disabled");
+				reload.classList.remove("disabled");
+				fetching = false;
+			}
+
+			function loadQuiz() {
+				if (!beginFetch()) return;
+
+				fetch(`/quiz/${quizId}`)
+					.then(res => res.json())
+					.then(json => {
+						if (json.fetch) {
+							if (!quiz) {
+								quiz = json;
+							} else {
+								quiz.title = json.title;
+								quiz.quizId = json.quizId;
+
+								const existing = json.questions
+									.filter(question => {
+										return quiz.questions.find(q => q.questionId === question.questionId);
+									});
+								const added = json.questions
+									.filter(question => {
+										return !quiz.questions.find(q => q.questionId === question.questionId);
+									});
+
+								quiz.questions = [...existing, ...added];
+							}
+
+							update();
+						} else {
+							message.textContent = json.message;
 						}
+					})
+					.catch(() => message.textContent = "error!")
+					.finally(endFetch);
+			}
 
-						questions.forEach(question => {
-							const item = document.createElement("li");
+			function editTitle() {
+				if (!beginFetch()) return;
 
-							const text = document.createElement("span");
-							text.textContent = question.text;
+				const title = prompt("quiz title?", quiz.title);
+				if (!title) return;
 
-							const answerList = document.createElement("ul");
-							question.answers.forEach(answer => {
-								const answerItem = document.createElement("li");
-
-								const answerText = document.createElement("span");
-								answerText.textContent = answer.text + (answer.correct? " - correct": "");
-
-								answerItem.appendChild(answerText);
-								answerList.appendChild(answerItem);
-							});
-
-							item.appendChild(text);
-							item.appendChild(answerList);
-							list.appendChild(item);
-						});
-					} else {
-						message.textContent = json.message;
-					}
+				fetch("/quiz", {
+					method: "PUT",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({
+						quizId: quiz.quizId,
+						title,
+					}),
 				})
-				.catch(() => message.textContent = "error!");
+					.then(res => res.json())
+					.then(json => {
+						quiz.title = json.title;
+						update();
+					})
+					.catch(() => message.textContent = "error!")
+					.finally(endFetch);
+			}
+
+			function toggleQuizOpen() {
+				if (!beginFetch()) return;
+
+				fetch("/quiz", {
+					method: "PUT",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({
+						quizId: quiz.quizId,
+						open: !quiz.open,
+					}),
+				})
+					.then(res => res.json())
+					.then(json => {
+						quiz.open = json.open;
+						update();
+					})
+					.catch(() => message.textContent = "error!")
+					.finally(endFetch);
+			}
+
+			function editQuestion(question) {
+				if (!beginFetch()) return;
+
+				const text = prompt("question text?", question.text);
+				if (!text) return;
+
+				fetch("/question", {
+					method: "PUT",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({
+						quizId: quiz.quizId,
+						questionId: question.questionId,
+						text,
+					}),
+				})
+					.then(res => res.json())
+					.then(json => {
+						question.text = json.text;
+						update();
+					})
+					.catch(() => message.textContent = "error!")
+					.finally(endFetch);
+			}
+
+			function editAnswer(question, answer) {
+				if (!beginFetch()) return;
+
+				const text = prompt("answer text?", answer.text);
+				if (!text) return;
+
+				fetch("/answer", {
+					method: "PUT",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({
+						quizId: quiz.quizId,
+						questionId: question.questionId,
+						answerId: answer.answerId,
+						text,
+					}),
+				})
+					.then(res => res.json())
+					.then(json => {
+						answer.text = json.text;
+						update();
+					})
+					.catch(() => message.textContent = "error!")
+					.finally(endFetch);
+			}
+
+			function toggleAnswerCorrect(question, answer) {
+				if (!beginFetch()) return;
+
+				fetch("/answer", {
+					method: "PUT",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({
+						quizId: quiz.quizId,
+						questionId: question.questionId,
+						answerId: answer.answerId,
+						correct: !answer.correct,
+					}),
+				})
+					.then(res => res.json())
+					.then(json => {
+						answer.correct = json.correct;
+						update();
+					})
+					.catch(() => message.textContent = "error!")
+					.finally(endFetch);
+			}
+
+			function update() {
+				if (!quiz) return;
+
+				updateTitle();
+				updateQuestions();
+			}
+
+			function updateTitle() {
+				if (!quiz.span || !quiz.button) {
+					title.innerHTML = "";
+					quiz.span = document.createElement("span");
+
+					quiz.editButton = document.createElement("button");
+					quiz.editButton.textContent = "edit";
+					quiz.editButton.addEventListener("click", editTitle);
+
+					quiz.openButton = document.createElement("button");
+					quiz.openButton.addEventListener("click", toggleQuizOpen);
+
+					title.appendChild(quiz.span);
+					title.appendChild(quiz.editButton);
+					title.appendChild(quiz.openButton);
+				}
+
+				quiz.span.textContent = `(${quiz.open? "open": "closed"}) ${quiz.title}`;
+				quiz.openButton.textContent = quiz.open? "close": "open";
+			}
+
+			function updateQuestions() {
+				if (!quiz.questions?.length) {
+					questions.innerHTML = "";
+					message.textContent = "no questions";
+					return;
+				}
+
+				if (!quiz.questions.ul) {
+					questions.innerHTML = "";
+					quiz.questions.ul = document.createElement("ul");
+					questions.appendChild(quiz.questions.ul);
+				}
+
+				quiz.questions.forEach(question => updateQuestion(question));
+			}
+
+			function updateQuestion(question) {
+				if (!question.item) {
+					question.item = document.createElement("li");
+					question.span = document.createElement("span");
+
+					question.button = document.createElement("button");
+					question.button.textContent = "edit";
+					question.button.addEventListener("click", event => editQuestion(question));
+
+					question.ul = document.createElement("ul");
+
+					question.item.appendChild(question.span);
+					question.item.appendChild(question.button);
+					question.item.appendChild(question.ul);
+					quiz.questions.ul.appendChild(question.item);
+				}
+
+				question.span.textContent = question.text;
+
+				question.answers.forEach(answer => updateAnswer(question, answer));
+			}
+
+			function updateAnswer(question, answer) {
+				if (!answer.li || !answer.span) {
+					answer.li = document.createElement("li");
+					answer.span = document.createElement("span");
+
+					answer.editButton = document.createElement("button");
+					answer.editButton.textContent = "edit";
+					answer.editButton.addEventListener("click", event => editAnswer(question, answer));
+
+					answer.correctButton = document.createElement("button");
+					answer.correctButton.addEventListener("click", event => toggleAnswerCorrect(question, answer));
+
+					answer.li.appendChild(answer.span);
+					answer.li.appendChild(answer.editButton);
+					answer.li.appendChild(answer.correctButton);
+					question.ul.appendChild(answer.li);
+				}
+
+				answer.span.textContent = `${answer.text} ${answer.correct? "(correct)": ""}`;
+				answer.correctButton.textContent = answer.correct? "incorrect": "correct";
+			}
 		</script>
 	</body>
 </html>

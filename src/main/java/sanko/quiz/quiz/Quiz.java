@@ -39,15 +39,9 @@ public class Quiz {
 		this.title = title;
 	}
 
-	public void update(String title) {
-		this.title = title;
-	}
-
 	public void update(String title, Boolean open) {
-		this.title = title;
-		if (open != null) {
-			this.open = open;
-		}
+		if (title != null) this.title = title;
+		if (open != null) this.open = open;
 	}
 
 }
