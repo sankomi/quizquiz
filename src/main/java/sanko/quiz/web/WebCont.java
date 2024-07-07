@@ -25,6 +25,15 @@ public class WebCont {
 		}
 	}
 
+	@GetMapping("/create")
+	public String create(@CurrentUser User currentUser) {
+		if (currentUser == null) {
+			return "create";
+		} else {
+			return "redirect:/list";
+		}
+	}
+
 	@GetMapping("/logout")
 	public String logout(@CurrentUser User currentUser) {
 		if (currentUser == null) {

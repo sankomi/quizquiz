@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex">
+
+		<title>create - quizquiz</title>
+
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	<body>
+		<h1>create</h1>
+
+		<form id="create" class="form">
+			<div class="form__row">
+				<label class="form__label" for="username">username</label>
+				<input id="username"></label>
+			</div>
+			<div class="form__row">
+				<input type="submit" value="create">
+			</div>
+		</form>
+		<div><img id="image" alt></div>
+
+		<form id="verify" class="form" style="display:none;">
+			<h2>verify</h2>
+			<div class="form__row">
+				<label class="form__label" for="password">password</label>
+				<input id="password"></label>
+			</div>
+			<div class="form__row">
+				<input type="submit" value="verify">
+			</div>
+		</form>
+
+		<p id="message"></p>
+
+		<script>
+			const create = document.getElementById("create");
+			const username = document.getElementById("username");
+			const image = document.getElementById("image");
+
+			const verify = document.getElementById("verify");
+			const password = document.getElementById("password");
+
+			const message = document.getElementById("message");
+
+			let usernameVerify = null;
+
+			create.addEventListener("submit", event => {
+				event.preventDefault();
+
+				usernameVerify = username.value;
+
+				fetch("/user", {
+					method: "POST",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({username: username.value}),
+				})
+					.then(res => res.json())
+					.then(json => {
+						if (json.create) {
+							image.src = `data:image/png;base64,${json.image}`;
+							verify.style.display = null;
+						} else {
+							message.textContent = json.message;
+						}
+					})
+					.catch(() => message.textContent = "error!");
+			});
+
+			verify.addEventListener("submit", event => {
+				event.preventDefault();
+
+				fetch("/user/verify", {
+					method: "PUT",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({
+						username: usernameVerify,
+						password: password.value,
+					}),
+				})
+					.then(res => res.json())
+					.then(json => {
+						if (json.verify) {
+							window.location.href = "/list";
+						} else {
+							message.textContent = json.message;
+						}
+					})
+					.catch(() => message.textContent = "error!");
+			});
+		</script>
+	</body>
+</html>
