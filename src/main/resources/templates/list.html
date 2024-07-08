@@ -14,48 +14,118 @@
 		<h1>list</h1>
 
 		<ul id="list"></ul>
+		<div><button id="add">add quiz</button></div>
 		<p id="message"></p>
 
 		<script>
 			const list = document.getElementById("list");
+			const add = document.getElementById("add");
+			add.addEventListener("click", addQuiz);
 			const message = document.getElementById("message");
 
-			fetch("/quiz")
-				.then(res => res.json())
-				.then(json => {
-					if (json.list) {
-						const quizs = json.quizs;
-						if (!quizs?.length) {
-							message.textContent = "not found";
-							return;
+			let quizs = null;
+			let fetching = false;
+
+			load();
+
+			function beginFetch() {
+				if (fetching) return false;
+				fetching = true;
+				list.classList.add("disabled");
+				add.classList.add("disabled");
+				return true;
+			}
+
+			function endFetch() {
+				list.classList.remove("disabled");
+				add.classList.remove("disabled");
+				fetching = false;
+			}
+
+			function load() {
+				if (!beginFetch()) return;
+
+				fetch("/quiz")
+					.then(res => res.json())
+					.then(json => {
+						if (json.list) {
+							if (quizs) {
+								const existing = quizs
+									.filter(quiz => {
+										return json.quizs.find(q => q.quizId === quiz.quizId);
+									});
+								const added = json.quizs
+									.filter(quiz => {
+										return !quizs.find(q => q.quizId === quiz.quizId);
+									});
+
+								quizs = [...existing, ...added];
+							} else {
+								quizs = json.quizs;
+							}
+
+							if (!quizs.length) {
+								quizs = null;
+								list.innerHTML = "";
+								message.textContent = "not found";
+								return;
+							}
+
+							update();
+						} else {
+							message.textContent = json.message;
 						}
+					})
+					.catch(() => message.textContent = "error!")
+					.finally(endFetch);
+				}
 
-						quizs.forEach(quiz => {
-							const item = document.createElement("li");
 
-							const title = document.createElement("span");
-							title.textContent = quiz.title;
+				function addQuiz() {
+					if (!beginFetch()) return;
 
-							const edit = document.createElement("a");
-							edit.textContent = "edit";
-							edit.href = `/edit?id=${quiz.quizId}`;
+					fetch("/quiz", {method: "POST"})
+						.then(res => res.json())
+						.then(json => {
+							if (json.create) {
+								setTimeout(load, 0);
+							} else {
+								message.textContent = json.message;
+							}
+						})
+						.catch(() => message.textContent = "error!")
+						.finally(endFetch);
+				}
 
-							const play = document.createElement("a");
-							play.textContent = "play";
-							play.href = `/play.html?id=${quiz.quizId}`;
+				function update() {
+					if (!quizs) return;
 
-							item.appendChild(title);
-							item.appendChild(document.createTextNode(" "));
-							item.appendChild(edit);
-							item.appendChild(document.createTextNode(" "));
-							item.appendChild(play);
-							list.appendChild(item);
-						});
-					} else {
-						message.textContent = json.message;
+					quizs.forEach(updateQuiz);
+				}
+
+				function updateQuiz(quiz){
+					if (!quiz.item) {
+						quiz.item = document.createElement("li");
+						quiz.span = document.createElement("span");
+
+						quiz.editLink = document.createElement("a");
+						quiz.editLink.textContent = "edit";
+						quiz.editLink.href = `/edit?id=${quiz.quizId}`;
+
+						quiz.playLink = document.createElement("a");
+						quiz.playLink.textContent = "play";
+						quiz.playLink.href = `/play.html?id=${quiz.quizId}`;
+
+						quiz.item.appendChild(quiz.span);
+						quiz.item.appendChild(document.createTextNode(" "));
+						quiz.item.appendChild(quiz.editLink);
+						quiz.item.appendChild(document.createTextNode(" "));
+						quiz.item.appendChild(quiz.playLink);
+						list.appendChild(quiz.item);
 					}
-				})
-				.catch(() => message.textContent = "error!");
+
+					quiz.span.textContent = quiz.title;
+				}
 		</script>
 	</body>
 </html>

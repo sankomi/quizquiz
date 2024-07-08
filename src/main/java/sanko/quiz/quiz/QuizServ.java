@@ -21,6 +21,7 @@ public class QuizServ {
 
 		Quiz quiz = Quiz.builder()
 			.user(currentUser)
+			.title("untitled quiz")
 			.build();
 		quiz = quizRepo.save(quiz);
 

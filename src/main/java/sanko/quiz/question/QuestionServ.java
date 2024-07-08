@@ -37,6 +37,7 @@ public class QuestionServ {
 		Question question = Question.builder()
 			.quiz(quiz)
 			.number(number)
+			.text("question " + String.valueOf(number))
 			.build();
 		question = questionRepo.save(question);
 
@@ -45,6 +46,7 @@ public class QuestionServ {
 			Answer answer = Answer.builder()
 				.question(question)
 				.number(i)
+				.text("answer " + String.valueOf(i))
 				.build();
 			answer = answerRepo.save(answer);
 			answers.add(answer);

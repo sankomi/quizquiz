@@ -15,6 +15,7 @@
 
 		<h2 id="title"></h2>
 		<div id="questions"></div>
+		<div><button id="add">add question</button></div>
 		<p id="message"></p>
 		<div><button id="reload">reload</button></div>
 
@@ -22,6 +23,8 @@
 			const title = document.getElementById("title");
 			const questions = document.getElementById("questions");
 			const message = document.getElementById("message");
+			const add = document.getElementById("add");
+			add.addEventListener("click", addQuestion);
 			const reload = document.getElementById("reload");
 			reload.addEventListener("click", loadQuiz);
 
@@ -62,9 +65,9 @@
 								quiz.title = json.title;
 								quiz.quizId = json.quizId;
 
-								const existing = json.questions
+								const existing = quiz.questions
 									.filter(question => {
-										return quiz.questions.find(q => q.questionId === question.questionId);
+										return json.questions.find(q => q.questionId === question.questionId);
 									});
 								const added = json.questions
 									.filter(question => {
@@ -126,11 +129,31 @@
 					.finally(endFetch);
 			}
 
+			function addQuestion() {
+				if (!beginFetch()) return;
+
+				fetch("/question", {
+					method: "POST",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({quizId: quiz.quizId}),
+				})
+					.then(res => res.json())
+					.then(json => {
+						if (json.create) {
+							setTimeout(loadQuiz, 0);
+						} else {
+							message.textContent = json.message;
+						}
+					})
+					.catch(() => message.textContent = "error!")
+					.finally(endFetch);
+			}
+
 			function editQuestion(question) {
 				if (!beginFetch()) return;
 
 				const text = prompt("question text?", question.text);
-				if (!text) return;
+				if (!text) return endFetch();
 
 				fetch("/question", {
 					method: "PUT",
@@ -154,7 +177,7 @@
 				if (!beginFetch()) return;
 
 				const text = prompt("answer text?", answer.text);
-				if (!text) return;
+				if (!text) return endFetch();
 
 				fetch("/answer", {
 					method: "PUT",
@@ -232,10 +255,10 @@
 					return;
 				}
 
-				if (!quiz.questions.ul) {
+				if (!quiz.ul) {
 					questions.innerHTML = "";
-					quiz.questions.ul = document.createElement("ul");
-					questions.appendChild(quiz.questions.ul);
+					quiz.ul = document.createElement("ul");
+					questions.appendChild(quiz.ul);
 				}
 
 				quiz.questions.forEach(question => updateQuestion(question));
@@ -255,7 +278,7 @@
 					question.item.appendChild(question.span);
 					question.item.appendChild(question.button);
 					question.item.appendChild(question.ul);
-					quiz.questions.ul.appendChild(question.item);
+					quiz.ul.appendChild(question.item);
 				}
 
 				question.span.textContent = question.text;
