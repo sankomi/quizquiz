@@ -28,8 +28,7 @@
 			const reload = document.getElementById("reload");
 			reload.addEventListener("click", loadQuiz);
 
-			const urlParams = new URLSearchParams(window.location.search);
-			const quizId = urlParams.get("id");
+			const quizId = "[[${id}]]";
 
 			let quiz = null;
 			let fetching = false;
@@ -90,7 +89,7 @@
 				if (!beginFetch()) return;
 
 				const title = prompt("quiz title?", quiz.title);
-				if (!title) return;
+				if (!title) return endFetch();
 
 				fetch("/quiz", {
 					method: "PUT",

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex">
+
+		<title>play - quizquiz</title>
+
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	<body>
+		<div id="app" class="app"></div>
+
+		<script>
+			(async function play() {
+				const app = document.getElementById("app");
+
+				const title = document.createElement("h1");
+				title.classList.add("hide");
+				title.textContent = "loading quiz...";
+				app.appendChild(title);
+
+				show(title, 300);
+				await new Promise(res => setTimeout(res, 850));
+
+				const questionText = document.createElement("h2");
+				questionText.classList.add("hide");
+				app.appendChild(questionText);
+
+				const quizId = "[[${id}]]";
+				const quiz = await fetch(`/quiz/${quizId}`)
+					.then(res => res.json())
+					.catch(console.error);
+
+				if (!quiz) {
+					hideAndShow(title, 0, () => title.textContent = "error!");
+					return;
+				} else if (!quiz.fetch) {
+					hideAndShow(title, 0, () => title.textContent = quiz.message);
+					return;
+				}
+
+				hideAndShow(title, 0, () => title.textContent = quiz.title);
+				document.title = `${quiz.title} - quizquiz`;
+
+				const questions = quiz.questions.sort(sortByNumber);
+				if (questions.length === 0) {
+					questionText.textContent = "no questions found";
+					show(questionText, 600);
+					return;
+				}
+
+				const list = document.createElement("ol");
+				list.classList.add("answers");
+				app.appendChild(list);
+
+				questions.forEach(question => {
+					question.answers = question.answers.sort(sortByNumber);
+				});
+
+				const answers = [];
+				const answerTexts = [];
+				for (let i = 0; i < 4; i++) {
+					const answer = document.createElement("li");
+					answer.classList.add("answer");
+					answer.classList.add("hide");
+					answers.push(answer);
+
+					const answerText = document.createElement("div");
+					answer.appendChild(answerText);
+					answerTexts.push(answerText);
+
+					list.appendChild(answer);
+				}
+
+				let current = -1;
+				let checking = true;
+				let complete = false;
+				let question;
+				let score = 0;
+
+				nextQuestion(true);
+
+				for (let i = 0; i < 4; i++) {
+					answers[i].addEventListener("click", () => selectOption(i));
+				}
+
+				function hide(element, delay, onHidden) {
+					if (delay < 0) delay = 0;
+
+					setTimeout(() => {
+						element.classList.add("hide");
+
+						setTimeout(() => {
+							onHidden();
+						}, 550);
+					}, delay);
+				}
+
+				function show(element, delay) {
+					if (delay < 0) delay = 0;
+
+					setTimeout(() => {
+						element.classList.add("show");
+						element.classList.remove("hide");
+
+						setTimeout(() => {
+							element.classList.remove("show");
+						}, 550);
+					}, delay);
+				}
+
+				function hideAndShow(element, delay, onHidden) {
+					hide(element, delay, () => {
+						onHidden();
+						show(element, 0);
+					});
+				}
+
+				function selectOption(i) {
+					if (complete) return;
+
+					if (!checking) {
+						checking = true;
+
+						if (question.answers[i].correct) {
+							score++;
+							answers[i].classList.add("answer--correct");
+							answerTexts[i].textContent = "correct!";
+						} else {
+							answers[i].classList.add("answer--incorrect");
+							answerTexts[i].textContent = "incorrect!";
+						}
+
+						setTimeout(() => {
+							nextQuestion();
+							setTimeout(() => checking = false, 1400);
+						}, 500);
+					}
+				}
+
+				function nextQuestion(first = false) {
+					current++;
+
+					if (current >= questions.length) {
+						completeQuiz();
+					} else {
+						question = questions[current];
+						displayQuestion(question, first);
+					}
+				}
+
+				function displayQuestion(question, first = false) {
+					if (first) {
+						questionText.textContent = question.text;
+						show(questionText, 550 + 150);
+
+						question.answers.forEach((answer, i) => {
+							answerTexts[i].textContent = answer.text;
+							show(answers[i], 550 + (i + 2) * 150);
+						});
+
+						setTimeout(() => checking = false, 1400);
+
+						return;
+					}
+
+					hideAndShow(questionText, 0, () => questionText.textContent = question.text);
+
+					question.answers.forEach((answer, i) => {
+						hideAndShow(answers[i], (i + 1) * 150, () => {
+							answers[i].classList.remove("answer--correct");
+							answers[i].classList.remove("answer--incorrect");
+							answerTexts[i].textContent = answer.text;
+						});
+					});
+				}
+
+				function completeQuiz() {
+					complete = true;
+
+					for (let i = 0; i < 4; i++) {
+						hide(answers[i], (3 - i) * 150, () => {});
+					}
+
+					hideAndShow(questionText, 600, () => {
+						questionText.textContent = `score ${Math.floor(100 * score / questions.length)}% (${score}/${questions.length})`;
+						list.remove();
+
+						setTimeout(() => {
+							const retry = document.createElement("div");
+							retry.classList.add("answer");
+							retry.classList.add("hide");
+							retry.textContent = "retry";
+							retry.addEventListener("click", event => window.location.reload());
+							questionText.after(retry);
+
+							show(retry, 150);
+						}, 0);
+					});
+				}
+			})();
+
+			function sortByNumber(o1, o2) {
+				return o1.number - o2.number;
+			}
+		</script>
+	</body>
+</html>

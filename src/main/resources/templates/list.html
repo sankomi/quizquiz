@@ -110,11 +110,11 @@
 
 						quiz.editLink = document.createElement("a");
 						quiz.editLink.textContent = "edit";
-						quiz.editLink.href = `/edit?id=${quiz.quizId}`;
+						quiz.editLink.href = `/edit/${quiz.quizId}`;
 
 						quiz.playLink = document.createElement("a");
 						quiz.playLink.textContent = "play";
-						quiz.playLink.href = `/play.html?id=${quiz.quizId}`;
+						quiz.playLink.href = `/play/${quiz.quizId}`;
 
 						quiz.item.appendChild(quiz.span);
 						quiz.item.appendChild(document.createTextNode(" "));
