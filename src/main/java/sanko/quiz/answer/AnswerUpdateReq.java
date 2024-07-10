@@ -1,5 +1,7 @@
 package sanko.quiz.answer;
 
+import java.util.UUID;
+
 import lombok.*; //Getter, Builder
 import lombok.experimental.Accessors;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,14 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Getter(onMethod_ = @JsonProperty)
 public class AnswerUpdateReq {
 
-	private Long quizId;
+	private UUID quizId;
 	private Long questionId;
 	private Long answerId;
 	private String text;
 	private Boolean correct;
 
 	@Builder
-	public AnswerUpdateReq(Long quizId, Long questionId, Long answerId, String text, Boolean correct) {
+	public AnswerUpdateReq(UUID quizId, Long questionId, Long answerId, String text, Boolean correct) {
 		this.quizId = quizId;
 		this.questionId = questionId;
 		this.answerId = answerId;

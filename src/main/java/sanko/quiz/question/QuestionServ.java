@@ -23,7 +23,7 @@ public class QuestionServ {
 	public QuestionCreateRes create(QuestionCreateReq req, User currentUser) {
 		if (currentUser == null) return QuestionCreateRes.fail(Const.NOT_LOGGED_IN);
 
-		Quiz quiz = quizRepo.findOneById(req.quizId());
+		Quiz quiz = quizRepo.findOneByQuizId(req.quizId());
 		if (quiz == null) return QuestionCreateRes.fail(Const.NOT_FOUND);
 		if (!quiz.user().id().equals(currentUser.id())) return QuestionCreateRes.fail(Const.NOT_FOUND);
 
@@ -61,7 +61,7 @@ public class QuestionServ {
 	public QuestionUpdateRes update(QuestionUpdateReq req, User currentUser) {
 		if (currentUser == null) return QuestionUpdateRes.fail(Const.NOT_LOGGED_IN);
 
-		Quiz quiz = quizRepo.findOneById(req.quizId());
+		Quiz quiz = quizRepo.findOneByQuizId(req.quizId());
 		if (quiz == null) return QuestionUpdateRes.fail(Const.NOT_FOUND);
 		if (!quiz.user().id().equals(currentUser.id())) return QuestionUpdateRes.fail(Const.NOT_FOUND);
 

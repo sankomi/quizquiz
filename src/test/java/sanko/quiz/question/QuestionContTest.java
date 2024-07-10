@@ -1,6 +1,6 @@
 package sanko.quiz.question;
 
-import java.util.Set;
+import java.util.*; //UUID, Set
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ class QuestionContTest {
 	void testQuestionCreate() throws Exception {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		Long questionId = 3L;
 		Long number = 4L;
 		String text = "text";
@@ -52,7 +52,7 @@ class QuestionContTest {
 		Quiz quiz = Quiz.builder()
 			.user(user)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 
 		Question question = Question.builder()
 			.quiz(quiz)
@@ -92,7 +92,7 @@ class QuestionContTest {
 	void testQuestionUpdate() throws Exception {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		Long questionId = 3L;
 		Long number = 4L;
 		String text = "text";
@@ -109,7 +109,7 @@ class QuestionContTest {
 		Quiz quiz = Quiz.builder()
 			.user(user)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 
 		Question question = Question.builder()
 			.quiz(quiz)

@@ -1,6 +1,6 @@
 package sanko.quiz.quiz;
 
-import java.util.List;
+import java.util.*; //UUID, List
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +23,7 @@ public class QuizServ {
 			.user(currentUser)
 			.title("untitled quiz")
 			.build();
+		quiz.setQuizId(UUID.randomUUID());
 		quiz = quizRepo.save(quiz);
 
 		return QuizCreateRes.success(quiz);
@@ -36,8 +37,8 @@ public class QuizServ {
 		return QuizListRes.success(list);
 	}
 
-	public QuizFetchRes fetch(Long quizId, User currentUser) {
-		Quiz quiz = quizRepo.findOneById(quizId);
+	public QuizFetchRes fetch(UUID quizId, User currentUser) {
+		Quiz quiz = quizRepo.findOneByQuizId(quizId);
 		if (quiz == null) return QuizFetchRes.fail(Const.NOT_FOUND);
 		if (!quiz.open()) {
 			if (currentUser == null) return QuizFetchRes.fail(Const.NOT_FOUND);
@@ -53,7 +54,7 @@ public class QuizServ {
 	public QuizUpdateRes update(QuizUpdateReq req, User currentUser) {
 		if (currentUser == null) return QuizUpdateRes.fail(Const.NOT_LOGGED_IN);
 
-		Quiz quiz = quizRepo.findOneById(req.quizId());
+		Quiz quiz = quizRepo.findOneByQuizId(req.quizId());
 		if (quiz == null) return QuizUpdateRes.fail(Const.NOT_FOUND);
 		if (!quiz.user().id().equals(currentUser.id())) return QuizUpdateRes.fail(Const.NOT_FOUND);
 

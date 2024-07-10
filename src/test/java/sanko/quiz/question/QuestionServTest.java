@@ -1,6 +1,6 @@
 package sanko.quiz.question;
 
-import java.util.Set;
+import java.util.*; //UUID, Set
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -38,7 +38,7 @@ class QuestionServTest {
 	void testQuestionCreate() {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String username = "username";
 		String key = "key";
 
@@ -57,7 +57,7 @@ class QuestionServTest {
 			.quizId(quizId)
 			.build();
 
-		when(quizRepo.findOneById(eq(quizId)))
+		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(quiz);
 
 		when(questionRepo.save(any(Question.class)))
@@ -70,7 +70,7 @@ class QuestionServTest {
 		assertTrue(res.create());
 		assertNull(res.message());
 
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
+		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
 		verify(questionRepo, times(1)).save(any(Question.class));
 	}
 
@@ -78,7 +78,8 @@ class QuestionServTest {
 	void testQuestionUpdate() {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		Long qId = 2L;
+		UUID quizId = UUID.randomUUID();
 		Long questionId = 3L;
 		String text = "text";
 		String username = "username";
@@ -93,7 +94,8 @@ class QuestionServTest {
 		Quiz quiz = Quiz.builder()
 			.user(user)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "id", qId);
+		setField(quiz, "quizId", quizId);
 
 		Question question = Question.builder()
 			.quiz(quiz)
@@ -107,7 +109,7 @@ class QuestionServTest {
 			.text(text)
 			.build();
 
-		when(quizRepo.findOneById(eq(quizId)))
+		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(quiz);
 
 		when(questionRepo.findOneById(eq(questionId)))
@@ -121,7 +123,7 @@ class QuestionServTest {
 		assertNull(res.message());
 		assertEquals(text, res.text());
 
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
+		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
 		verify(questionRepo, times(1)).findOneById(eq(questionId));
 	}
 

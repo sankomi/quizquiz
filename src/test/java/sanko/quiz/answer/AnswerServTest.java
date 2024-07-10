@@ -1,6 +1,6 @@
 package sanko.quiz.answer;
 
-import java.util.Set;
+import java.util.*; //UUID, Set
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -38,7 +38,8 @@ class AnswerServTest {
 	void testAnswerUpdate() {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		Long qId = 2L;
+		UUID quizId = UUID.randomUUID();
 		Long questionId = 3L;
 		Long answerId = 4L;
 		Long number = 3L;
@@ -56,7 +57,8 @@ class AnswerServTest {
 		Quiz quiz = Quiz.builder()
 			.user(user)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "id", qId);
+		setField(quiz, "quizId", quizId);
 
 		Question question = Question.builder()
 			.quiz(quiz)
@@ -79,7 +81,7 @@ class AnswerServTest {
 			.correct(correct)
 			.build();
 
-		when(quizRepo.findOneById(eq(quizId)))
+		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(quiz);
 
 		when(questionRepo.findOneById(eq(questionId)))
@@ -97,7 +99,7 @@ class AnswerServTest {
 		assertEquals(text, res.text());
 		assertEquals(correct, res.correct());
 
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
+		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
 		verify(questionRepo, times(1)).findOneById(eq(questionId));
 		verify(answerRepo, times(1)).findOneById(eq(answerId));
 	}

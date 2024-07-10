@@ -1,5 +1,7 @@
 package sanko.quiz.quiz;
 
+import java.util.UUID;
+
 import lombok.*; //Getter, Builder
 import lombok.experimental.Accessors;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,10 +13,10 @@ public class QuizCreateRes {
 	private boolean create;
 	private String message;
 
-	private Long quizId;
+	private UUID quizId;
 
 	@Builder
-	public QuizCreateRes(boolean create, Long quizId, String message) {
+	public QuizCreateRes(boolean create, UUID quizId, String message) {
 		this.create = create;
 		this.quizId = quizId;
 		this.message = message;
@@ -23,7 +25,7 @@ public class QuizCreateRes {
 	public static QuizCreateRes success(Quiz quiz) {
 		return QuizCreateRes.builder()
 			.create(true)
-			.quizId(quiz.id())
+			.quizId(quiz.quizId())
 			.build();
 	}
 

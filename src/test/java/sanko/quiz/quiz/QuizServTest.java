@@ -1,6 +1,6 @@
 package sanko.quiz.quiz;
 
-import java.util.Set;
+import java.util.*; //UUID, Set
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,7 +31,7 @@ class QuizServTest {
 	void testQuizCreate() {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		String username = "username";
 		String key = "key";
@@ -46,7 +46,7 @@ class QuizServTest {
 			.user(user)
 			.title(title)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 		setField(quiz, "questions", Set.of());
 
 		when(quizRepo.save(any(Quiz.class)))
@@ -81,7 +81,7 @@ class QuizServTest {
 	void testQuizFetch() {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		String username = "username";
 		String key = "key";
@@ -96,10 +96,10 @@ class QuizServTest {
 			.user(user)
 			.title(title)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 		setField(quiz, "questions", Set.of());
 
-		when(quizRepo.findOneById(eq(quizId)))
+		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(quiz);
 
 		//when
@@ -110,24 +110,24 @@ class QuizServTest {
 		assertNull(res.message());
 		assertEquals(title, res.title());
 
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
+		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
 	}
 
 	@Test
 	void testQuizFetchNotOpen() {
 		//given
-		Long quizId = 1L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		Boolean open = false;
 
 		Quiz quiz = Quiz.builder()
 			.title(title)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 		setField(quiz, "questions", Set.of());
 		setField(quiz, "open", open);
 
-		when(quizRepo.findOneById(eq(quizId)))
+		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(quiz);
 
 		//when
@@ -138,7 +138,7 @@ class QuizServTest {
 		assertEquals(Const.NOT_FOUND, res.message());
 		assertNull(res.title());
 
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
+		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
 	}
 
 	@Test
@@ -146,7 +146,7 @@ class QuizServTest {
 		//given
 		Long userId = 1L;
 		Long anotherUserId = 3L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		Boolean open = false;
 		String username = "username";
@@ -168,11 +168,11 @@ class QuizServTest {
 			.user(anotherUser)
 			.title(title)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 		setField(quiz, "questions", Set.of());
 		setField(quiz, "open", open);
 
-		when(quizRepo.findOneById(eq(quizId)))
+		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(quiz);
 
 		//when
@@ -183,14 +183,14 @@ class QuizServTest {
 		assertEquals(Const.NOT_FOUND, res.message());
 		assertNull(res.title());
 
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
+		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
 	}
 
 	@Test
 	void testQuizFetchNotFound() {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		String username = "username";
 		String key = "key";
@@ -201,7 +201,7 @@ class QuizServTest {
 			.build();
 		setField(user, "id", userId);
 
-		when(quizRepo.findOneById(eq(quizId)))
+		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(null);
 
 		//when
@@ -212,14 +212,14 @@ class QuizServTest {
 		assertEquals(Const.NOT_FOUND, res.message());
 		assertNull(res.title());
 
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
+		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
 	}
 
 	@Test
 	void testQuizUpdate() {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		Boolean open = true;
 		String username = "username";
@@ -235,7 +235,7 @@ class QuizServTest {
 			.user(user)
 			.title(title)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 		setField(quiz, "questions", Set.of());
 		setField(quiz, "open", open);
 
@@ -245,7 +245,7 @@ class QuizServTest {
 			.open(open)
 			.build();
 
-		when(quizRepo.findOneById(eq(quizId)))
+		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(quiz);
 
 		//when
@@ -257,14 +257,14 @@ class QuizServTest {
 		assertEquals(title, res.title());
 		assertEquals(open, res.open());
 
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
+		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
 	}
 
 	@Test
 	void testQuizUpdateNotFound() {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		Boolean open = true;
 		String username = "username";
@@ -282,7 +282,7 @@ class QuizServTest {
 			.open(open)
 			.build();
 
-		when(quizRepo.findOneById(eq(quizId)))
+		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(null);
 
 		//when
@@ -293,7 +293,7 @@ class QuizServTest {
 		assertEquals(Const.NOT_FOUND, res.message());
 		assertNull(res.title());
 
-		verify(quizRepo, times(1)).findOneById(eq(quizId));
+		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
 	}
 
 }

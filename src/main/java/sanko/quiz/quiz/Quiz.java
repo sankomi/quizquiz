@@ -1,6 +1,6 @@
 package sanko.quiz.quiz;
 
-import java.util.Set;
+import java.util.*; //UUID, Set
 import jakarta.persistence.*; //Entity, Table, Id, Column, GeneratedValue, GenerationType, JoinColumn, ManyToOne, OneToMany, OrderBy
 
 import lombok.*; //NoArgsConstructor, Getter, Builder
@@ -20,6 +20,8 @@ public class Quiz {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	private UUID quizId;
 
 	@ManyToOne
 	@JoinColumn(name = "user")
@@ -42,6 +44,10 @@ public class Quiz {
 	public void update(String title, Boolean open) {
 		if (title != null) this.title = title;
 		if (open != null) this.open = open;
+	}
+
+	void setQuizId(UUID quizId) {
+		this.quizId = quizId;
 	}
 
 }

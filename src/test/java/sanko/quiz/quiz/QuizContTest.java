@@ -1,6 +1,6 @@
 package sanko.quiz.quiz;
 
-import java.util.Set;
+import java.util.*; //UUID, Set
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ class QuizContTest {
 	void testQuizCreate() throws Exception {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		String username = "username";
 		String key = "key";
@@ -48,7 +48,7 @@ class QuizContTest {
 		Quiz quiz = Quiz.builder()
 			.user(user)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 
 		when(sessionServ.getUser())
 			.thenReturn(user);
@@ -62,7 +62,7 @@ class QuizContTest {
 		//then
 		res.andExpect(status().isOk())
 			.andExpect(jsonPath("$.create").value("true"))
-			.andExpect(jsonPath("$.quizId").value(quizId));
+			.andExpect(jsonPath("$.quizId").value(quizId.toString()));
 
 		verify(quizServ, times(1)).create(eq(user));
 		verify(sessionServ, times(1)).getUser();
@@ -72,7 +72,7 @@ class QuizContTest {
 	void testQuizFetch() throws Exception {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		String username = "username";
 		String key = "key";
@@ -87,7 +87,7 @@ class QuizContTest {
 			.user(user)
 			.title(title)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 		setField(quiz, "questions", Set.of());
 
 		when(sessionServ.getUser())
@@ -102,7 +102,7 @@ class QuizContTest {
 		//then
 		res.andExpect(status().isOk())
 			.andExpect(jsonPath("$.fetch").value("true"))
-			.andExpect(jsonPath("$.quizId").value(quizId))
+			.andExpect(jsonPath("$.quizId").value(quizId.toString()))
 			.andExpect(jsonPath("$.title").value(title));
 
 		verify(quizServ, times(1)).fetch(eq(quizId), eq(user));
@@ -113,7 +113,7 @@ class QuizContTest {
 	void testQuizUpdate() throws Exception {
 		//given
 		Long userId = 1L;
-		Long quizId = 2L;
+		UUID quizId = UUID.randomUUID();
 		String title = "title";
 		Boolean open = true;
 		String username = "username";
@@ -128,7 +128,7 @@ class QuizContTest {
 		Quiz quiz = Quiz.builder()
 			.user(user)
 			.build();
-		setField(quiz, "id", quizId);
+		setField(quiz, "quizId", quizId);
 		setField(quiz, "title", title);
 		setField(quiz, "open", open);
 

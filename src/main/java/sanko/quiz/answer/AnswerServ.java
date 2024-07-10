@@ -21,7 +21,7 @@ public class AnswerServ {
 	public AnswerUpdateRes update(AnswerUpdateReq req, User currentUser) {
 		if (currentUser == null) return AnswerUpdateRes.fail(Const.NOT_LOGGED_IN);
 
-		Quiz quiz = quizRepo.findOneById(req.quizId());
+		Quiz quiz = quizRepo.findOneByQuizId(req.quizId());
 		if (quiz == null) return AnswerUpdateRes.fail(Const.NOT_FOUND);
 		if (!quiz.user().id().equals(currentUser.id())) return AnswerUpdateRes.fail(Const.NOT_FOUND);
 

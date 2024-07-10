@@ -1,6 +1,6 @@
 package sanko.quiz.quiz;
 
-import java.util.Set;
+import java.util.*; //UUID, Set
 import java.util.stream.Collectors;
 
 import lombok.*; //Getter, Builder
@@ -16,13 +16,13 @@ public class QuizFetchRes {
 	private boolean fetch;
 	private String message;
 
-	private Long quizId;
+	private UUID quizId;
 	private String title;
 	private Set<QuestionFetchRes> questions;
 	private Boolean open;
 
 	@Builder
-	public QuizFetchRes(boolean fetch, String message, Long quizId, String title, Set<QuestionFetchRes> questions, Boolean open) {
+	public QuizFetchRes(boolean fetch, String message, UUID quizId, String title, Set<QuestionFetchRes> questions, Boolean open) {
 		this.fetch = fetch;
 		this.message = message;
 		this.quizId = quizId;
@@ -39,7 +39,7 @@ public class QuizFetchRes {
 
 		return QuizFetchRes.builder()
 			.fetch(true)
-			.quizId(quiz.id())
+			.quizId(quiz.quizId())
 			.title(quiz.title())
 			.questions(questions)
 			.open(quiz.open())
@@ -48,7 +48,7 @@ public class QuizFetchRes {
 
 	public static QuizFetchRes simple(Quiz quiz) {
 		return QuizFetchRes.builder()
-			.quizId(quiz.id())
+			.quizId(quiz.quizId())
 			.title(quiz.title())
 			.open(quiz.open())
 			.build();
