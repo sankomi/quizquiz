@@ -58,7 +58,12 @@ public class QuizServ {
 		if (quiz == null) return QuizUpdateRes.fail(Const.NOT_FOUND);
 		if (!quiz.user().id().equals(currentUser.id())) return QuizUpdateRes.fail(Const.NOT_FOUND);
 
-		quiz.update(req.title(), req.open());
+		String title = req.title();
+		Boolean open = req.open();
+		Boolean shuffleQuestions = req.shuffleQuestions();
+		Boolean shuffleAnswers = req.shuffleAnswers();
+
+		quiz.update(title, open, shuffleQuestions, shuffleAnswers);
 
 		return QuizUpdateRes.success(quiz);
 	}

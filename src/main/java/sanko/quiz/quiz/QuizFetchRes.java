@@ -1,14 +1,16 @@
 package sanko.quiz.quiz;
 
-import java.util.*; //UUID, Set
+import java.util.*; //UUID, List, Collections
 import java.util.stream.Collectors;
 
-import lombok.*; //Getter, Builder
+import lombok.*; //Getter, Builder, AllArgsConstructor
 import lombok.experimental.Accessors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import sanko.quiz.question.QuestionFetchRes;
 
+@AllArgsConstructor
+@Builder
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)
 public class QuizFetchRes {
@@ -18,24 +20,25 @@ public class QuizFetchRes {
 
 	private UUID quizId;
 	private String title;
-	private Set<QuestionFetchRes> questions;
+	private List<QuestionFetchRes> questions;
 	private Boolean open;
-
-	@Builder
-	public QuizFetchRes(boolean fetch, String message, UUID quizId, String title, Set<QuestionFetchRes> questions, Boolean open) {
-		this.fetch = fetch;
-		this.message = message;
-		this.quizId = quizId;
-		this.title = title;
-		this.questions = questions;
-		this.open = open;
-	}
+	private Boolean shuffleQuestions;
+	private Boolean shuffleAnswers;
 
 	public static QuizFetchRes success(Quiz quiz) {
-		Set<QuestionFetchRes> questions = quiz.questions()
+		if (quiz.shuffleQuestions()) {
+			Collections.shuffle(quiz.questions());
+		}
+		if (quiz.shuffleAnswers()) {
+			quiz.questions().forEach(question -> {
+				Collections.shuffle(question.answers());
+			});
+		}
+
+		List<QuestionFetchRes> questions = quiz.questions()
 			.stream()
 			.map(QuestionFetchRes::new)
-			.collect(Collectors.toSet());
+			.collect(Collectors.toList());
 
 		return QuizFetchRes.builder()
 			.fetch(true)
@@ -43,6 +46,8 @@ public class QuizFetchRes {
 			.title(quiz.title())
 			.questions(questions)
 			.open(quiz.open())
+			.shuffleQuestions(quiz.shuffleQuestions())
+			.shuffleAnswers(quiz.shuffleAnswers())
 			.build();
 	}
 

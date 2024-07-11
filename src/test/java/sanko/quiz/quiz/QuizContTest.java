@@ -1,6 +1,6 @@
 package sanko.quiz.quiz;
 
-import java.util.*; //UUID, Set
+import java.util.*; //UUID, List
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +88,7 @@ class QuizContTest {
 			.title(title)
 			.build();
 		setField(quiz, "quizId", quizId);
-		setField(quiz, "questions", Set.of());
+		setField(quiz, "questions", List.of());
 
 		when(sessionServ.getUser())
 			.thenReturn(user);

@@ -1,6 +1,6 @@
 package sanko.quiz.question;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.*; //Getter, Builder
@@ -16,13 +16,13 @@ public class QuestionFetchRes {
 	private Long questionId;
 	private Long number;
 	private String text;
-	private Set<AnswerFetchRes> answers;
+	private List<AnswerFetchRes> answers;
 
 	public QuestionFetchRes(Question question) {
-		Set<AnswerFetchRes> answers = question.answers()
+		List<AnswerFetchRes> answers = question.answers()
 			.stream()
 			.map(AnswerFetchRes::new)
-			.collect(Collectors.toSet());
+			.collect(Collectors.toList());
 
 		this.questionId = question.id();
 		this.number = question.number();

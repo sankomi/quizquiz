@@ -1,6 +1,6 @@
 package sanko.quiz.question;
 
-import java.util.*; //Set, HashSet
+import java.util.*; //List, ArrayList
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +41,7 @@ public class QuestionServ {
 			.build();
 		question = questionRepo.save(question);
 
-		Set<Answer> answers = new HashSet<>();
+		List<Answer> answers = new ArrayList<>();
 		for (long i = 0L; i < 4L; i++) {
 			Answer answer = Answer.builder()
 				.question(question)

@@ -4,6 +4,8 @@ import lombok.*; //Getter, Builder
 import lombok.experimental.Accessors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@AllArgsConstructor
+@Builder
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)
 public class QuizUpdateRes {
@@ -12,20 +14,16 @@ public class QuizUpdateRes {
 	private String message;
 	private String title;
 	private Boolean open;
-
-	@Builder
-	public QuizUpdateRes(boolean update, String message, String title, Boolean open) {
-		this.update = update;
-		this.message = message;
-		this.title = title;
-		this.open = open;
-	}
+	private Boolean shuffleQuestions;
+	private Boolean shuffleAnswers;
 
 	public static QuizUpdateRes success(Quiz quiz) {
 		return QuizUpdateRes.builder()
 			.update(true)
 			.title(quiz.title())
 			.open(quiz.open())
+			.shuffleQuestions(quiz.shuffleQuestions())
+			.shuffleAnswers(quiz.shuffleAnswers())
 			.build();
 	}
 

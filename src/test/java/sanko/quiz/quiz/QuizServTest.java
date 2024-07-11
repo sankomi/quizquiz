@@ -1,6 +1,6 @@
 package sanko.quiz.quiz;
 
-import java.util.*; //UUID, Set
+import java.util.*; //UUID, List
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -47,7 +47,7 @@ class QuizServTest {
 			.title(title)
 			.build();
 		setField(quiz, "quizId", quizId);
-		setField(quiz, "questions", Set.of());
+		setField(quiz, "questions", List.of());
 
 		when(quizRepo.save(any(Quiz.class)))
 			.thenReturn(quiz);
@@ -97,7 +97,7 @@ class QuizServTest {
 			.title(title)
 			.build();
 		setField(quiz, "quizId", quizId);
-		setField(quiz, "questions", Set.of());
+		setField(quiz, "questions", List.of());
 
 		when(quizRepo.findOneByQuizId(eq(quizId)))
 			.thenReturn(quiz);
@@ -124,7 +124,7 @@ class QuizServTest {
 			.title(title)
 			.build();
 		setField(quiz, "quizId", quizId);
-		setField(quiz, "questions", Set.of());
+		setField(quiz, "questions", List.of());
 		setField(quiz, "open", open);
 
 		when(quizRepo.findOneByQuizId(eq(quizId)))
@@ -169,7 +169,7 @@ class QuizServTest {
 			.title(title)
 			.build();
 		setField(quiz, "quizId", quizId);
-		setField(quiz, "questions", Set.of());
+		setField(quiz, "questions", List.of());
 		setField(quiz, "open", open);
 
 		when(quizRepo.findOneByQuizId(eq(quizId)))
@@ -236,7 +236,7 @@ class QuizServTest {
 			.title(title)
 			.build();
 		setField(quiz, "quizId", quizId);
-		setField(quiz, "questions", Set.of());
+		setField(quiz, "questions", List.of());
 		setField(quiz, "open", open);
 
 		QuizUpdateReq req = QuizUpdateReq.builder()

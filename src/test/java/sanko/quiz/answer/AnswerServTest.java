@@ -1,6 +1,6 @@
 package sanko.quiz.answer;
 
-import java.util.*; //UUID, Set
+import java.util.*; //UUID, List
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;

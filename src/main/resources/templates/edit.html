@@ -128,6 +128,28 @@
 					.finally(endFetch);
 			}
 
+			function toggleShuffle(questions, answers) {
+				if (!beginFetch()) return;
+
+				fetch("/quiz", {
+					method: "PUT",
+					headers: {"content-type": "application/json"},
+					body: JSON.stringify({
+						quizId: quiz.quizId,
+						...(questions? {shuffleQuestions: !quiz.shuffleQuestions}: {}),
+						...(answers? {shuffleAnswers: !quiz.shuffleAnswers}: {}),
+					}),
+				})
+					.then(res => res.json())
+					.then(json => {
+						quiz.shuffleQuestions = json.shuffleQuestions;
+						quiz.shuffleAnswers = json.shuffleAnswers;
+						update();
+					})
+					.catch(() => message.textContent = "error!")
+					.finally(endFetch);
+			}
+
 			function addQuestion() {
 				if (!beginFetch()) return;
 
@@ -227,7 +249,7 @@
 			}
 
 			function updateTitle() {
-				if (!quiz.span || !quiz.button) {
+				if (!quiz.span) {
 					title.innerHTML = "";
 					quiz.span = document.createElement("span");
 
@@ -238,13 +260,23 @@
 					quiz.openButton = document.createElement("button");
 					quiz.openButton.addEventListener("click", toggleQuizOpen);
 
+					quiz.shuffleQuestionsButton = document.createElement("button");
+					quiz.shuffleQuestionsButton.addEventListener("click", event => toggleShuffle(true, false));
+
+					quiz.shuffleAnswersButton = document.createElement("button");
+					quiz.shuffleAnswersButton.addEventListener("click", event => toggleShuffle(false, true));
+
 					title.appendChild(quiz.span);
 					title.appendChild(quiz.editButton);
 					title.appendChild(quiz.openButton);
+					title.appendChild(quiz.shuffleQuestionsButton);
+					title.appendChild(quiz.shuffleAnswersButton);
 				}
 
-				quiz.span.textContent = `(${quiz.open? "open": "closed"}) ${quiz.title}`;
-				quiz.openButton.textContent = quiz.open? "close": "open";
+				quiz.span.textContent = quiz.title;
+				quiz.openButton.textContent = quiz.open? "opened": "closed";
+				quiz.shuffleQuestionsButton.textContent = quiz.shuffleQuestions? "questions shuffled": "questions ordered";
+				quiz.shuffleAnswersButton.textContent = quiz.shuffleAnswers? "answers shuffled": "answers ordered";
 			}
 
 			function updateQuestions() {

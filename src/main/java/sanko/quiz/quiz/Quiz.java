@@ -1,6 +1,6 @@
 package sanko.quiz.quiz;
 
-import java.util.*; //UUID, Set
+import java.util.*; //UUID, List
 import jakarta.persistence.*; //Entity, Table, Id, Column, GeneratedValue, GenerationType, JoinColumn, ManyToOne, OneToMany, OrderBy
 
 import lombok.*; //NoArgsConstructor, Getter, Builder
@@ -31,9 +31,12 @@ public class Quiz {
 
 	@OneToMany(mappedBy = "quiz")
 	@OrderBy("number ASC")
-	private Set<Question> questions;
+	private List<Question> questions;
 
 	private boolean open;
+
+	private boolean shuffleQuestions;
+	private boolean shuffleAnswers;
 
 	@Builder
 	public Quiz(User user, String title) {
@@ -41,9 +44,16 @@ public class Quiz {
 		this.title = title;
 	}
 
-	public void update(String title, Boolean open) {
+	public void update(
+		String title,
+		Boolean open,
+		Boolean shuffleQuestions,
+		Boolean shuffleAnswers
+	) {
 		if (title != null) this.title = title;
 		if (open != null) this.open = open;
+		if (shuffleQuestions != null) this.shuffleQuestions = shuffleQuestions;
+		if (shuffleAnswers != null) this.shuffleAnswers = shuffleAnswers;
 	}
 
 	void setQuizId(UUID quizId) {

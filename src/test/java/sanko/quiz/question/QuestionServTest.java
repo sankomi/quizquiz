@@ -1,6 +1,6 @@
 package sanko.quiz.question;
 
-import java.util.*; //UUID, Set
+import java.util.*; //UUID, List
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -51,7 +51,7 @@ class QuestionServTest {
 		Quiz quiz = Quiz.builder()
 			.user(user)
 			.build();
-		setField(quiz, "questions", Set.of());
+		setField(quiz, "questions", List.of());
 
 		QuestionCreateReq req = QuestionCreateReq.builder()
 			.quizId(quizId)

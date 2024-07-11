@@ -44,7 +44,7 @@
 				hideAndShow(title, 0, () => title.textContent = quiz.title);
 				document.title = `${quiz.title} - quizquiz`;
 
-				const questions = quiz.questions.sort(sortByNumber);
+				const questions = quiz.questions;
 				if (questions.length === 0) {
 					questionText.textContent = "no questions found";
 					show(questionText, 600);
@@ -54,10 +54,6 @@
 				const list = document.createElement("ol");
 				list.classList.add("answers");
 				app.appendChild(list);
-
-				questions.forEach(question => {
-					question.answers = question.answers.sort(sortByNumber);
-				});
 
 				const answers = [];
 				const answerTexts = [];
@@ -201,10 +197,6 @@
 					});
 				}
 			})();
-
-			function sortByNumber(o1, o2) {
-				return o1.number - o2.number;
-			}
 		</script>
 	</body>
 </html>

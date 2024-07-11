@@ -1,6 +1,6 @@
 package sanko.quiz.question;
 
-import java.util.*; //UUID, Set
+import java.util.*; //UUID, List
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.beans.factory.annotation.Autowired;

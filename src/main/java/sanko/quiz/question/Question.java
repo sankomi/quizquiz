@@ -1,6 +1,6 @@
 package sanko.quiz.question;
 
-import java.util.Set;
+import java.util.List;
 import jakarta.persistence.*; //Entity, Table, Id, Column, GeneratedValue, GenerationType, JoinColumn, ManyToOne, OneToMany, OrderBy
 
 import lombok.*; //NoArgsConstructor, Getter, Builder
@@ -30,7 +30,7 @@ public class Question {
 
 	@OneToMany(mappedBy = "question")
 	@OrderBy("number ASC")
-	private Set<Answer> answers;
+	private List<Answer> answers;
 
 	@Builder
 	public Question(Quiz quiz, Long number, String text) {
@@ -43,7 +43,7 @@ public class Question {
 		this.text = text;
 	}
 
-	public void addAnswers(Set<Answer> answers) {
+	public void addAnswers(List<Answer> answers) {
 		this.answers = answers;
 	}
 

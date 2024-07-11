@@ -1,6 +1,6 @@
 package sanko.quiz.answer;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.*; //Getter, Builder
