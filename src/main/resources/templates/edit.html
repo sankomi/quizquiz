@@ -14,6 +14,7 @@
 		<h1>edit</h1>
 
 		<h2 id="title"></h2>
+		<div><img id="image" alt></div>
 		<div id="questions"></div>
 		<div><button id="add">add question</button></div>
 		<p id="message"></p>
@@ -21,6 +22,7 @@
 
 		<script>
 			const title = document.getElementById("title");
+			const image = document.getElementById("image");
 			const questions = document.getElementById("questions");
 			const message = document.getElementById("message");
 			const add = document.getElementById("add");
@@ -60,6 +62,14 @@
 						if (json.fetch) {
 							if (!quiz) {
 								quiz = json;
+
+								fetch(`/quiz/${quizId}/qr`)
+									.then(res => res.json())
+									.then(json => {
+										if (json.qr) {
+											image.src = `data:image/png;base64,${json.qrCode}`;
+										}
+									});
 							} else {
 								quiz.title = json.title;
 								quiz.quizId = json.quizId;

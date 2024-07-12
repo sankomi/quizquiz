@@ -12,12 +12,15 @@ spring:
       initialize-schema: always
   web:
     resources:
-      static-locations: "file:src/main/resources/static"
+      static-locations: file:src/main/resources/static
   thymeleaf:
-    prefix: "file:src/main/resources/templates/"
+    prefix: file:src/main/resources/templates/
     cache: false
 
 session:
   datasource:
     url: jdbc:sqlite:data/session.db
     driver-class-name: org.sqlite.JDBC
+
+env:
+  base-url: http://localhost:8080

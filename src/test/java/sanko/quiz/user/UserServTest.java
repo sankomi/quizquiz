@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import sanko.quiz.Const;
+import sanko.quiz.common.QrServ;
 import sanko.quiz.session.SessionServ;
 
 import static org.mockito.Mockito.*; //when, verify, times, never

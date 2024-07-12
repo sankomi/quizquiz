@@ -4,16 +4,22 @@ import java.util.*; //UUID, List
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 
 import sanko.quiz.Const;
+import sanko.quiz.common.QrServ;
 import sanko.quiz.user.User;
 
 @RequiredArgsConstructor
 @Service
 public class QuizServ {
 
+	@Value("${env.base-url}")
+	private String baseUrl;
+
 	private final QuizRepo quizRepo;
+	private final QrServ qrServ;
 
 	@Transactional
 	public QuizCreateRes create(User currentUser) {
@@ -40,6 +46,7 @@ public class QuizServ {
 	public QuizFetchRes fetch(UUID quizId, User currentUser) {
 		Quiz quiz = quizRepo.findOneByQuizId(quizId);
 		if (quiz == null) return QuizFetchRes.fail(Const.NOT_FOUND);
+
 		if (!quiz.open()) {
 			if (currentUser == null) return QuizFetchRes.fail(Const.NOT_FOUND);
 
@@ -49,6 +56,19 @@ public class QuizServ {
 		}
 
 		return QuizFetchRes.success(quiz);
+	}
+
+	public QuizQrRes qr(UUID quizId, User currentUser) {
+		Quiz quiz = quizRepo.findOneByQuizId(quizId);
+		if (quiz == null) return QuizQrRes.fail(Const.NOT_FOUND);
+
+		if (!quiz.user().id().equals(currentUser.id())) {
+			return QuizQrRes.fail(Const.NOT_FOUND);
+		}
+
+		String url = baseUrl + "/play/" + quiz.quizId().toString();
+		String qr = qrServ.create(url);
+		return QuizQrRes.success(qr);
 	}
 
 	public QuizUpdateRes update(QuizUpdateReq req, User currentUser) {

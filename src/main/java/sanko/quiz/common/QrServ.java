@@ -1,4 +1,4 @@
-package sanko.quiz.user;
+package sanko.quiz.common;
 
 import java.util.Base64;
 import java.io.*; //ByteArrayOutputStream, IOException

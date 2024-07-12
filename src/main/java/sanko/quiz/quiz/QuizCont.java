@@ -33,6 +33,14 @@ public class QuizCont {
 		return quizServ.fetch(quizId, currentUser);
 	}
 
+	@GetMapping("/{quizId}/qr")
+	public QuizQrRes qr(
+		@PathVariable("quizId") UUID quizId,
+		@CurrentUser User currentUser
+	) {
+		return quizServ.qr(quizId, currentUser);
+	}
+
 	@PutMapping
 	public QuizUpdateRes update(
 		@RequestBody QuizUpdateReq req,

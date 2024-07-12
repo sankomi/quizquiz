@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import sanko.quiz.Const;
+import sanko.quiz.common.QrServ;
 import sanko.quiz.session.SessionServ;
 
 @RequiredArgsConstructor
