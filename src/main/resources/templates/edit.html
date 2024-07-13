@@ -59,14 +59,14 @@
 				fetch(`/quiz/${quizId}`)
 					.then(res => res.json())
 					.then(json => {
-						if (json.fetch) {
+						if (json.ok) {
 							if (!quiz) {
 								quiz = json;
 
 								fetch(`/quiz/${quizId}/qr`)
 									.then(res => res.json())
 									.then(json => {
-										if (json.qr) {
+										if (json.ok) {
 											image.src = `data:image/png;base64,${json.qrCode}`;
 										}
 									});
@@ -170,7 +170,7 @@
 				})
 					.then(res => res.json())
 					.then(json => {
-						if (json.create) {
+						if (json.ok) {
 							setTimeout(loadQuiz, 0);
 						} else {
 							message.textContent = json.message;

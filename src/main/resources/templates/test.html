@@ -90,7 +90,7 @@
 						})
 							.then(res => res.json())
 							.then(json => {
-								if (json.create) {
+								if (json.ok) {
 									createImage.src = `data:image/png;base64,${json.image}`;
 								} else {
 									createMessage.textContent = json.message;
@@ -136,7 +136,7 @@
 						})
 							.then(res => res.json())
 							.then(json => {
-								if (json.verify) {
+								if (json.ok) {
 									verifyMessage.textContent = "verified!";
 								} else {
 									verifyMessage.textContent = json.message;
@@ -182,7 +182,7 @@
 						})
 							.then(res => res.json())
 							.then(json => {
-								if (json.login) {
+								if (json.ok) {
 									loginMessage.textContent = "logged in!";
 								} else {
 									loginMessage.textContent = json.message;
@@ -211,7 +211,7 @@
 						fetch("/user/login", {method: "DELETE"})
 							.then(res => res.json())
 							.then(json => {
-								if (json.logout) {
+								if (json.ok) {
 									logoutMessage.textContent = "logged out!";
 								} else {
 									logoutMessage.textContent = json.message;
@@ -240,7 +240,7 @@
 						fetch("/quiz", {method: "POST"})
 							.then(res => res.json())
 							.then(json => {
-								if (json.create) {
+								if (json.ok) {
 									createquizMessage.textContent = `quizId = ${json.quizId}`;
 								} else {
 									createquizMessage.textContent = json.message;
@@ -275,7 +275,7 @@
 						fetch(`/quiz/${fetchquizId.value}`)
 							.then(res => res.json())
 							.then(json => {
-								if (json.fetch) {
+								if (json.ok) {
 									const id = document.createElement("div");
 									id.textContent = `quizId = ${json.quizId}`;
 									const title = document.createElement("div");
@@ -416,7 +416,7 @@
 						})
 							.then(res => res.json())
 							.then(json => {
-								if (json.create) {
+								if (json.ok) {
 									createquestionMessage.textContent = `${json.questionId}: number = ${json.number}`;
 								} else {
 									createquestionMessage.textContent = json.message;

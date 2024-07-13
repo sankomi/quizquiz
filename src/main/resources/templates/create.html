@@ -60,7 +60,7 @@
 				})
 					.then(res => res.json())
 					.then(json => {
-						if (json.create) {
+						if (json.ok) {
 							image.src = `data:image/png;base64,${json.image}`;
 							verify.style.display = null;
 						} else {
@@ -83,7 +83,7 @@
 				})
 					.then(res => res.json())
 					.then(json => {
-						if (json.verify) {
+						if (json.ok) {
 							window.location.href = "/list";
 						} else {
 							message.textContent = json.message;

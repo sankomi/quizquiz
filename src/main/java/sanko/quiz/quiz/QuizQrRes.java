@@ -1,31 +1,24 @@
 package sanko.quiz.quiz;
 
-import lombok.*; //Getter, Builder, AllArgsConstructor
-import lombok.experimental.Accessors;
+import lombok.*; //Getter, AllArgsConstructor, NoArgsConstructor
+import lombok.experimental.*; //SuperBuilder, Accessors
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import sanko.quiz.common.Response;
+
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
+@SuperBuilder
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)
-public class QuizQrRes {
-
-	private boolean qr;
-	private String message;
+public class QuizQrRes extends Response {
 
 	private String qrCode;
 
 	public static QuizQrRes success(String qrCode) {
 		return QuizQrRes.builder()
-			.qr(true)
+			.ok(true)
 			.qrCode(qrCode)
-			.build();
-	}
-
-	public static QuizQrRes fail(String message) {
-		return QuizQrRes.builder()
-			.qr(false)
-			.message(message)
 			.build();
 	}
 

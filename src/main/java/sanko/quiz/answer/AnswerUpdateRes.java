@@ -1,38 +1,26 @@
 package sanko.quiz.answer;
 
-import lombok.*; //Getter, Builder
-import lombok.experimental.Accessors;
+import lombok.*; //Getter, AllArgsConstructor, NoArgsConstructor
+import lombok.experimental.*; //SuperBuilder, Accessors
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import sanko.quiz.common.Response;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)
-public class AnswerUpdateRes {
+public class AnswerUpdateRes extends Response {
 
-	private boolean update;
-	private String message;
 	private String text;
 	private Boolean correct;
 
-	@Builder
-	public AnswerUpdateRes(boolean update, String message, String text, Boolean correct) {
-		this.update = update;
-		this.message = message;
-		this.text = text;
-		this.correct = correct;
-	}
-
 	public static AnswerUpdateRes success(Answer answer) {
 		return AnswerUpdateRes.builder()
-			.update(true)
+			.ok(true)
 			.text(answer.text())
 			.correct(answer.correct())
-			.build();
-	}
-
-	public static AnswerUpdateRes fail(String message) {
-		return AnswerUpdateRes.builder()
-			.update(false)
-			.message(message)
 			.build();
 	}
 

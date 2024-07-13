@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import sanko.quiz.Const;
+import sanko.quiz.common.Response;
 import sanko.quiz.user.User;
 import sanko.quiz.quiz.*; //Quiz, QuizRepo
 import sanko.quiz.answer.*; //Answer, AnswerRepo
@@ -21,11 +22,11 @@ public class QuestionServ {
 
 	@Transactional
 	public QuestionCreateRes create(QuestionCreateReq req, User currentUser) {
-		if (currentUser == null) return QuestionCreateRes.fail(Const.NOT_LOGGED_IN);
+		if (currentUser == null) return Response.fail(QuestionCreateRes.class, Const.NOT_LOGGED_IN);
 
 		Quiz quiz = quizRepo.findOneByQuizId(req.quizId());
-		if (quiz == null) return QuestionCreateRes.fail(Const.NOT_FOUND);
-		if (!quiz.user().id().equals(currentUser.id())) return QuestionCreateRes.fail(Const.NOT_FOUND);
+		if (quiz == null) return Response.fail(QuestionCreateRes.class, Const.NOT_FOUND);
+		if (!quiz.user().id().equals(currentUser.id())) return Response.fail(QuestionCreateRes.class, Const.NOT_FOUND);
 
 		Long number = 1L;
 		for (Question q : quiz.questions()) {
@@ -59,15 +60,15 @@ public class QuestionServ {
 
 	@Transactional
 	public QuestionUpdateRes update(QuestionUpdateReq req, User currentUser) {
-		if (currentUser == null) return QuestionUpdateRes.fail(Const.NOT_LOGGED_IN);
+		if (currentUser == null) return Response.fail(QuestionUpdateRes.class, Const.NOT_LOGGED_IN);
 
 		Quiz quiz = quizRepo.findOneByQuizId(req.quizId());
-		if (quiz == null) return QuestionUpdateRes.fail(Const.NOT_FOUND);
-		if (!quiz.user().id().equals(currentUser.id())) return QuestionUpdateRes.fail(Const.NOT_FOUND);
+		if (quiz == null) return Response.fail(QuestionUpdateRes.class, Const.NOT_FOUND);
+		if (!quiz.user().id().equals(currentUser.id())) return Response.fail(QuestionUpdateRes.class, Const.NOT_FOUND);
 
 		Question question = questionRepo.findOneById(req.questionId());
-		if (question == null) return QuestionUpdateRes.fail(Const.NOT_FOUND);
-		if (!question.quiz().id().equals(quiz.id())) return QuestionUpdateRes.fail(Const.NOT_FOUND);
+		if (question == null) return Response.fail(QuestionUpdateRes.class, Const.NOT_FOUND);
+		if (!question.quiz().id().equals(quiz.id())) return Response.fail(QuestionUpdateRes.class, Const.NOT_FOUND);
 
 		question.update(req.text());
 

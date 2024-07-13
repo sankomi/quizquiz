@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import sanko.quiz.Const;
+import sanko.quiz.common.Response;
 import sanko.quiz.user.User;
 import sanko.quiz.quiz.*; //Quiz, QuizRepo
 import sanko.quiz.question.*; //Question, QuestionRepo;
@@ -19,19 +20,19 @@ public class AnswerServ {
 
 	@Transactional
 	public AnswerUpdateRes update(AnswerUpdateReq req, User currentUser) {
-		if (currentUser == null) return AnswerUpdateRes.fail(Const.NOT_LOGGED_IN);
+		if (currentUser == null) return Response.fail(AnswerUpdateRes.class, Const.NOT_LOGGED_IN);
 
 		Quiz quiz = quizRepo.findOneByQuizId(req.quizId());
-		if (quiz == null) return AnswerUpdateRes.fail(Const.NOT_FOUND);
-		if (!quiz.user().id().equals(currentUser.id())) return AnswerUpdateRes.fail(Const.NOT_FOUND);
+		if (quiz == null) return Response.fail(AnswerUpdateRes.class, Const.NOT_FOUND);
+		if (!quiz.user().id().equals(currentUser.id())) return Response.fail(AnswerUpdateRes.class, Const.NOT_FOUND);
 
 		Question question = questionRepo.findOneById(req.questionId());
-		if (question == null) return AnswerUpdateRes.fail(Const.NOT_FOUND);
-		if (!question.quiz().id().equals(quiz.id())) return AnswerUpdateRes.fail(Const.NOT_FOUND);
+		if (question == null) return Response.fail(AnswerUpdateRes.class, Const.NOT_FOUND);
+		if (!question.quiz().id().equals(quiz.id())) return Response.fail(AnswerUpdateRes.class, Const.NOT_FOUND);
 
 		Answer answer = answerRepo.findOneById(req.answerId());
-		if (answer == null) return AnswerUpdateRes.fail(Const.NOT_FOUND);
-		if (!answer.question().id().equals(question.id())) return AnswerUpdateRes.fail(Const.NOT_FOUND);
+		if (answer == null) return Response.fail(AnswerUpdateRes.class, Const.NOT_FOUND);
+		if (!answer.question().id().equals(question.id())) return Response.fail(AnswerUpdateRes.class, Const.NOT_FOUND);
 
 		answer.update(req.text(), req.correct());
 

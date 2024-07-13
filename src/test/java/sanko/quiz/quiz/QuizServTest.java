@@ -60,7 +60,7 @@ class QuizServTest {
 		QuizCreateRes res = quizServ.create(user);
 
 		//then
-		assertTrue(res.create());
+		assertTrue(res.ok());
 		assertNull(res.message());
 
 		verify(quizRepo, times(1)).save(any(Quiz.class));
@@ -75,7 +75,7 @@ class QuizServTest {
 		QuizCreateRes res = quizServ.create(null);
 
 		//then
-		assertFalse(res.create());
+		assertFalse(res.ok());
 		assertEquals(Const.NOT_LOGGED_IN, res.message());
 
 		verify(quizRepo, never()).save(any(Quiz.class));
@@ -110,7 +110,7 @@ class QuizServTest {
 		QuizFetchRes res = quizServ.fetch(quizId, user);
 
 		//then
-		assertTrue(res.fetch());
+		assertTrue(res.ok());
 		assertNull(res.message());
 		assertEquals(title, res.title());
 
@@ -138,7 +138,7 @@ class QuizServTest {
 		QuizFetchRes res = quizServ.fetch(quizId, null);
 
 		//then
-		assertFalse(res.fetch());
+		assertFalse(res.ok());
 		assertEquals(Const.NOT_FOUND, res.message());
 		assertNull(res.title());
 
@@ -183,7 +183,7 @@ class QuizServTest {
 		QuizFetchRes res = quizServ.fetch(quizId, user);
 
 		//then
-		assertFalse(res.fetch());
+		assertFalse(res.ok());
 		assertEquals(Const.NOT_FOUND, res.message());
 		assertNull(res.title());
 
@@ -212,7 +212,7 @@ class QuizServTest {
 		QuizFetchRes res = quizServ.fetch(quizId, user);
 
 		//then
-		assertFalse(res.fetch());
+		assertFalse(res.ok());
 		assertEquals(Const.NOT_FOUND, res.message());
 		assertNull(res.title());
 
@@ -256,7 +256,7 @@ class QuizServTest {
 		QuizUpdateRes res = quizServ.update(req, user);
 
 		//then
-		assertTrue(res.update());
+		assertTrue(res.ok());
 		assertNull(res.message());
 		assertEquals(title, res.title());
 		assertEquals(open, res.open());
@@ -293,7 +293,7 @@ class QuizServTest {
 		QuizUpdateRes res = quizServ.update(req, user);
 
 		//then
-		assertFalse(res.update());
+		assertFalse(res.ok());
 		assertEquals(Const.NOT_FOUND, res.message());
 		assertNull(res.title());
 

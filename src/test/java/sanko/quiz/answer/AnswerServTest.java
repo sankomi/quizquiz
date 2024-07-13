@@ -94,7 +94,7 @@ class AnswerServTest {
 		AnswerUpdateRes res = answerServ.update(req, user);
 
 		//then
-		assertTrue(res.update());
+		assertTrue(res.ok());
 		assertNull(res.message());
 		assertEquals(text, res.text());
 		assertEquals(correct, res.correct());

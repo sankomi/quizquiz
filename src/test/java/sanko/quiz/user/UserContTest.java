@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sanko.quiz.common.Response;
 import sanko.quiz.session.*; //SessionServ, SessionUser
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*; //post, put, delete
@@ -54,7 +55,7 @@ class UserContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.create").value("true"))
+			.andExpect(jsonPath("$.ok").value(true))
 			.andExpect(jsonPath("$.key").value(key))
 			.andExpect(jsonPath("$.image").value(image));
 
@@ -88,7 +89,7 @@ class UserContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.verify").value("true"));
+			.andExpect(jsonPath("$.ok").value(true));
 
 		verify(userServ, times(1)).verify(any(UserVerifyReq.class), eq(null));
 		verify(sessionServ, times(1)).getUser();
@@ -120,7 +121,7 @@ class UserContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.login").value("true"));
+			.andExpect(jsonPath("$.ok").value(true));
 
 		verify(userServ, times(1)).login(any(UserLoginReq.class), eq(null));
 		verify(sessionServ, times(1)).getUser();
@@ -139,7 +140,7 @@ class UserContTest {
 			.build();
 
 		when(userServ.login(any(UserLoginReq.class), eq(null)))
-			.thenReturn(UserLoginRes.fail(message));
+			.thenReturn(Response.fail(UserLoginRes.class, message));
 
 		when(sessionServ.getUser())
 			.thenReturn(null);
@@ -153,7 +154,7 @@ class UserContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.login").value("false"))
+			.andExpect(jsonPath("$.ok").value(false))
 			.andExpect(jsonPath("$.message").value(message));
 
 		verify(userServ, times(1)).login(any(UserLoginReq.class), eq(null));
@@ -189,7 +190,7 @@ class UserContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.logout").value("true"));
+			.andExpect(jsonPath("$.ok").value(true));
 
 		verify(userServ, times(1)).logout(eq(user));
 		verify(sessionServ, times(1)).getUser();

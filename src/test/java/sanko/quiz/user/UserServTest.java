@@ -67,7 +67,7 @@ class UserServTest {
 		UserCreateRes res = userServ.create(req, null);
 
 		//then
-		assertTrue(res.create());
+		assertTrue(res.ok());
 		assertEquals(key, res.key());
 		assertEquals(image, res.image());
 		assertNull(res.message());
@@ -97,7 +97,7 @@ class UserServTest {
 		UserCreateRes res = userServ.create(req, user);
 
 		//then
-		assertFalse(res.create());
+		assertFalse(res.ok());
 		assertEquals(Const.ALREADY_LOGGED_IN, res.message());
 
 		verify(userRepo, never()).findOneByUsername(anyString());
@@ -128,7 +128,7 @@ class UserServTest {
 		UserCreateRes res = userServ.create(req, null);
 
 		//then
-		assertFalse(res.create());
+		assertFalse(res.ok());
 		assertNull(res.key());
 		assertNull(res.image());
 		assertEquals(Const.USERNAME_EXISTS, res.message());
@@ -169,7 +169,7 @@ class UserServTest {
 		UserVerifyRes res = userServ.verify(req, null);
 
 		//then
-		assertTrue(res.verify());
+		assertTrue(res.ok());
 		assertNull(res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
@@ -199,7 +199,7 @@ class UserServTest {
 		UserVerifyRes res = userServ.verify(req, user);
 
 		//then
-		assertFalse(res.verify());
+		assertFalse(res.ok());
 		assertEquals(Const.ALREADY_LOGGED_IN, res.message());
 
 		verify(userRepo, never()).findOneByUsername(anyString());
@@ -227,7 +227,7 @@ class UserServTest {
 		UserVerifyRes res = userServ.verify(req, null);
 
 		//then
-		assertFalse(res.verify());
+		assertFalse(res.ok());
 		assertEquals(Const.NOT_FOUND, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
@@ -263,7 +263,7 @@ class UserServTest {
 		UserVerifyRes res = userServ.verify(req, null);
 
 		//then
-		assertFalse(res.verify());
+		assertFalse(res.ok());
 		assertEquals(Const.PASSWORD_INCORRECT, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
@@ -300,7 +300,7 @@ class UserServTest {
 		UserLoginRes res = userServ.login(req, null);
 
 		//then
-		assertTrue(res.login());
+		assertTrue(res.ok());
 		assertNull(res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
@@ -330,7 +330,7 @@ class UserServTest {
 		UserLoginRes res = userServ.login(req, user);
 
 		//then
-		assertFalse(res.login());
+		assertFalse(res.ok());
 		assertEquals(Const.ALREADY_LOGGED_IN, res.message());
 
 		verify(userRepo, never()).findOneByUsername(anyString());
@@ -357,7 +357,7 @@ class UserServTest {
 		UserLoginRes res = userServ.login(req, null);
 
 		//then
-		assertFalse(res.login());
+		assertFalse(res.ok());
 		assertEquals(Const.NOT_FOUND, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(anyString());
@@ -390,7 +390,7 @@ class UserServTest {
 		UserLoginRes res = userServ.login(req, null);
 
 		//then
-		assertFalse(res.login());
+		assertFalse(res.ok());
 		assertEquals(Const.NOT_VERIFIED, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(anyString());
@@ -426,7 +426,7 @@ class UserServTest {
 		UserLoginRes res = userServ.login(req, null);
 
 		//then
-		assertFalse(res.login());
+		assertFalse(res.ok());
 		assertEquals(Const.PASSWORD_INCORRECT, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
@@ -450,7 +450,7 @@ class UserServTest {
 		UserLogoutRes res = userServ.logout(user);
 
 		//then
-		assertTrue(res.logout());
+		assertTrue(res.ok());
 		assertNull(res.message());
 
 		verify(sessionServ, times(1)).removeUser();
@@ -464,7 +464,7 @@ class UserServTest {
 		UserLogoutRes res = userServ.logout(null);
 
 		//then
-		assertFalse(res.logout());
+		assertFalse(res.ok());
 		assertEquals(Const.NOT_LOGGED_IN, res.message());
 
 		verify(sessionServ, never()).removeUser();

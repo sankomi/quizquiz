@@ -91,7 +91,7 @@ class AnswerContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.update").value("true"))
+			.andExpect(jsonPath("$.ok").value(true))
 			.andExpect(jsonPath("$.text").value(text))
 			.andExpect(jsonPath("$.correct").value(correct));
 

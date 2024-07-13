@@ -1,17 +1,18 @@
 package sanko.quiz.quiz;
 
-import lombok.*; //Getter, Builder
-import lombok.experimental.Accessors;
+import lombok.*; //Getter, AllArgsConstructor, NoArgsConstructor
+import lombok.experimental.*; //SuperBuilder, Accessors
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import sanko.quiz.common.Response;
+
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
+@SuperBuilder
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)
-public class QuizUpdateRes {
+public class QuizUpdateRes extends Response {
 
-	private boolean update;
-	private String message;
 	private String title;
 	private Boolean open;
 	private Boolean shuffleQuestions;
@@ -19,18 +20,11 @@ public class QuizUpdateRes {
 
 	public static QuizUpdateRes success(Quiz quiz) {
 		return QuizUpdateRes.builder()
-			.update(true)
+			.ok(true)
 			.title(quiz.title())
 			.open(quiz.open())
 			.shuffleQuestions(quiz.shuffleQuestions())
 			.shuffleAnswers(quiz.shuffleAnswers())
-			.build();
-	}
-
-	public static QuizUpdateRes fail(String message) {
-		return QuizUpdateRes.builder()
-			.update(false)
-			.message(message)
 			.build();
 	}
 

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 
 import sanko.quiz.Const;
-import sanko.quiz.common.QrServ;
+import sanko.quiz.common.*; //Response, QrServ;
 import sanko.quiz.user.User;
 
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class QuizServ {
 
 	@Transactional
 	public QuizCreateRes create(User currentUser) {
-		if (currentUser == null) return QuizCreateRes.fail(Const.NOT_LOGGED_IN);
+		if (currentUser == null) return Response.fail(QuizCreateRes.class, Const.NOT_LOGGED_IN);
 
 		Quiz quiz = Quiz.builder()
 			.user(currentUser)
@@ -36,7 +36,7 @@ public class QuizServ {
 	}
 
 	public QuizListRes list(User currentUser) {
-		if (currentUser == null) return QuizListRes.fail(Const.NOT_LOGGED_IN);
+		if (currentUser == null) return Response.fail(QuizListRes.class, Const.NOT_LOGGED_IN);
 
 		List<Quiz> list = quizRepo.findByUser(currentUser);
 
@@ -45,13 +45,13 @@ public class QuizServ {
 
 	public QuizFetchRes fetch(UUID quizId, User currentUser) {
 		Quiz quiz = quizRepo.findOneByQuizId(quizId);
-		if (quiz == null) return QuizFetchRes.fail(Const.NOT_FOUND);
+		if (quiz == null) return Response.fail(QuizFetchRes.class, Const.NOT_FOUND);
 
 		if (!quiz.open()) {
-			if (currentUser == null) return QuizFetchRes.fail(Const.NOT_FOUND);
+			if (currentUser == null) return Response.fail(QuizFetchRes.class, Const.NOT_FOUND);
 
 			if (!quiz.user().id().equals(currentUser.id())) {
-				return QuizFetchRes.fail(Const.NOT_FOUND);
+				return Response.fail(QuizFetchRes.class, Const.NOT_FOUND);
 			}
 		}
 
@@ -60,10 +60,10 @@ public class QuizServ {
 
 	public QuizQrRes qr(UUID quizId, User currentUser) {
 		Quiz quiz = quizRepo.findOneByQuizId(quizId);
-		if (quiz == null) return QuizQrRes.fail(Const.NOT_FOUND);
+		if (quiz == null) return Response.fail(QuizQrRes.class, Const.NOT_FOUND);
 
 		if (!quiz.user().id().equals(currentUser.id())) {
-			return QuizQrRes.fail(Const.NOT_FOUND);
+			return Response.fail(QuizQrRes.class, Const.NOT_FOUND);
 		}
 
 		String url = baseUrl + "/play/" + quiz.quizId().toString();
@@ -72,11 +72,11 @@ public class QuizServ {
 	}
 
 	public QuizUpdateRes update(QuizUpdateReq req, User currentUser) {
-		if (currentUser == null) return QuizUpdateRes.fail(Const.NOT_LOGGED_IN);
+		if (currentUser == null) return Response.fail(QuizUpdateRes.class, Const.NOT_LOGGED_IN);
 
 		Quiz quiz = quizRepo.findOneByQuizId(req.quizId());
-		if (quiz == null) return QuizUpdateRes.fail(Const.NOT_FOUND);
-		if (!quiz.user().id().equals(currentUser.id())) return QuizUpdateRes.fail(Const.NOT_FOUND);
+		if (quiz == null) return Response.fail(QuizUpdateRes.class, Const.NOT_FOUND);
+		if (!quiz.user().id().equals(currentUser.id())) return Response.fail(QuizUpdateRes.class, Const.NOT_FOUND);
 
 		String title = req.title();
 		Boolean open = req.open();

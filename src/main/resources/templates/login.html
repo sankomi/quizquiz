@@ -46,7 +46,7 @@
 				})
 					.then(res => res.json())
 					.then(json => {
-						if (json.login) {
+						if (json.ok) {
 							window.location.href = "/list";
 						} else {
 							message.textContent = json.message;

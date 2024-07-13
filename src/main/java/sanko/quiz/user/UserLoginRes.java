@@ -1,32 +1,20 @@
 package sanko.quiz.user;
 
-import lombok.*; //Getter, Builder
-import lombok.experimental.Accessors;
+import lombok.*; //Getter, NoArgsConstructor
+import lombok.experimental.*; //SuperBuilder, Accessors
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import sanko.quiz.common.Response;
+
+@NoArgsConstructor
+@SuperBuilder
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)
-public class UserLoginRes {
-
-	private boolean login;
-	private String message;
-
-	@Builder
-	public UserLoginRes(boolean login, String message) {
-		this.login = login;
-		this.message = message;
-	}
+public class UserLoginRes extends Response {
 
 	public static UserLoginRes success() {
 		return UserLoginRes.builder()
-			.login(true)
-			.build();
-	}
-
-	public static UserLoginRes fail(String message) {
-		return UserLoginRes.builder()
-			.login(false)
-			.message(message)
+			.ok(true)
 			.build();
 	}
 

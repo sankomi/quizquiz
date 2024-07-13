@@ -80,7 +80,7 @@ class QuestionContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.create").value("true"))
+			.andExpect(jsonPath("$.ok").value(true))
 			.andExpect(jsonPath("$.questionId").value(questionId))
 			.andExpect(jsonPath("$.number").value(number));
 
@@ -139,7 +139,7 @@ class QuestionContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.update").value("true"))
+			.andExpect(jsonPath("$.ok").value(true))
 			.andExpect(jsonPath("$.text").value(text));
 
 		verify(questionServ, times(1)).update(any(QuestionUpdateReq.class), eq(user));

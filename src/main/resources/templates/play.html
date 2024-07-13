@@ -36,7 +36,7 @@
 				if (!quiz) {
 					hideAndShow(title, 0, () => title.textContent = "error!");
 					return;
-				} else if (!quiz.fetch) {
+				} else if (!quiz.ok) {
 					hideAndShow(title, 0, () => title.textContent = quiz.message);
 					return;
 				}

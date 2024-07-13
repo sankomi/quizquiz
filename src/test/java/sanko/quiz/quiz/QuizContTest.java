@@ -61,7 +61,7 @@ class QuizContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.create").value("true"))
+			.andExpect(jsonPath("$.ok").value(true))
 			.andExpect(jsonPath("$.quizId").value(quizId.toString()));
 
 		verify(quizServ, times(1)).create(eq(user));
@@ -101,7 +101,7 @@ class QuizContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.fetch").value("true"))
+			.andExpect(jsonPath("$.ok").value(true))
 			.andExpect(jsonPath("$.quizId").value(quizId.toString()))
 			.andExpect(jsonPath("$.title").value(title));
 
@@ -153,7 +153,7 @@ class QuizContTest {
 
 		//then
 		res.andExpect(status().isOk())
-			.andExpect(jsonPath("$.update").value("true"))
+			.andExpect(jsonPath("$.ok").value(true))
 			.andExpect(jsonPath("$.title").value(title))
 			.andExpect(jsonPath("$.open").value(open));
 

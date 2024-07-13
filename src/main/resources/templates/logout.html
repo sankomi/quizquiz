@@ -23,7 +23,7 @@
 			})
 				.then(res => res.json())
 				.then(json => {
-					if (json.logout) {
+					if (json.ok) {
 						window.location.href = "/login";
 					} else {
 						message.textContent = json.message;

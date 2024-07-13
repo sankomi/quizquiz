@@ -3,20 +3,21 @@ package sanko.quiz.quiz;
 import java.util.*; //UUID, List, Collections
 import java.util.stream.Collectors;
 
-import lombok.*; //Getter, Builder, AllArgsConstructor
-import lombok.experimental.Accessors;
+import lombok.*; //Getter, AllArgsConstructor, NoArgsConstructor
+import lombok.experimental.*; //SuperBuilder, Accessors
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import sanko.quiz.common.Response;
+
+import sanko.quiz.common.Response;
 import sanko.quiz.question.QuestionFetchRes;
 
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
+@SuperBuilder
 @Accessors(fluent = true)
 @Getter(onMethod_ = @JsonProperty)
-public class QuizFetchRes {
-
-	private boolean fetch;
-	private String message;
+public class QuizFetchRes extends Response {
 
 	private UUID quizId;
 	private String title;
@@ -41,7 +42,7 @@ public class QuizFetchRes {
 			.collect(Collectors.toList());
 
 		return QuizFetchRes.builder()
-			.fetch(true)
+			.ok(true)
 			.quizId(quiz.quizId())
 			.title(quiz.title())
 			.questions(questions)
@@ -56,13 +57,6 @@ public class QuizFetchRes {
 			.quizId(quiz.quizId())
 			.title(quiz.title())
 			.open(quiz.open())
-			.build();
-	}
-
-	public static QuizFetchRes fail(String message) {
-		return QuizFetchRes.builder()
-			.fetch(false)
-			.message(message)
 			.build();
 	}
 

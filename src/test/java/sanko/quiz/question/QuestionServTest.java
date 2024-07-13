@@ -15,7 +15,7 @@ import sanko.quiz.answer.AnswerRepo;
 
 import static org.mockito.Mockito.*; //when, verify, times, never
 import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.*; //assertTrue, assertFalse, assertNull, assertEquals
+import static org.junit.jupiter.api.Assertions.*; //assertTrue, assertNull, assertEquals
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(SpringExtension.class)
@@ -67,7 +67,7 @@ class QuestionServTest {
 		QuestionCreateRes res = questionServ.create(req, user);
 
 		//then
-		assertTrue(res.create());
+		assertTrue(res.ok());
 		assertNull(res.message());
 
 		verify(quizRepo, times(1)).findOneByQuizId(eq(quizId));
@@ -119,7 +119,7 @@ class QuestionServTest {
 		QuestionUpdateRes res = questionServ.update(req, user);
 
 		//then
-		assertTrue(res.update());
+		assertTrue(res.ok());
 		assertNull(res.message());
 		assertEquals(text, res.text());
 

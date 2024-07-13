@@ -48,7 +48,7 @@
 				fetch("/quiz")
 					.then(res => res.json())
 					.then(json => {
-						if (json.list) {
+						if (json.ok) {
 							if (quizs) {
 								const existing = quizs
 									.filter(quiz => {
@@ -87,7 +87,7 @@
 					fetch("/quiz", {method: "POST"})
 						.then(res => res.json())
 						.then(json => {
-							if (json.create) {
+							if (json.ok) {
 								setTimeout(load, 0);
 							} else {
 								message.textContent = json.message;
