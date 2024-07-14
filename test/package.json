@@ -1,0 +1,14 @@
+{
+	"name": "quizquiztest",
+	"author": "sanko",
+	"description": "test quizquiz app",
+	"version": "0.0.1",
+	"scripts": {
+		"start": "cypress open"
+	},
+	"devDependencies": {
+		"@zxing/browser": "^0.1.5",
+		"cypress": "^13.13.0",
+		"otplib": "^12.0.1"
+	}
+}
