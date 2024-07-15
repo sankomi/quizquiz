@@ -1,34 +1,37 @@
 import {BrowserQRCodeReader} from "@zxing/browser";
 import {authenticator} from "otplib";
 
-let username = `cypress.${Cypress._.random(0, Number.MAX_SAFE_INTEGER)}`;
+const username = `cypress.${Cypress._.random(0, Number.MAX_SAFE_INTEGER)}`;
 let secret;
-let notUsername = `cypress.${Cypress._.random(0, Number.MAX_SAFE_INTEGER)}`;
-let notSecret = "notsecret";
+const notUsername = `cypress.${Cypress._.random(0, Number.MAX_SAFE_INTEGER)}`;
+const notSecret = "notsecret";
 
 describe("index", () => {
-	it("should load", () => {
+	beforeEach(() => {
 		cy.visit("http://localhost:8080");
 	});
 
+	it("should load", () => {
+	});
+
 	it("should link to create", () => {
-		cy.visit("http://localhost:8080");
 		cy.get(":nth-child(2) > a").click();
 		cy.location("pathname").should("include", "/create");
 	});
 
 	it("should link to login", () => {
-		cy.visit("http://localhost:8080");
 		cy.get(":nth-child(3) > a").click();
 		cy.location("pathname").should("include", "/login");
 	});
 });
 
 describe("create", () => {
+	beforeEach(() => {
+		cy.visit("http://localhost:8080/create");
+	});
+
 	describe("first time", () => {
 		it("should generate qrcode and redirect to /list on verify", () => {
-			cy.visit("http://localhost:8080/create");
-
 			cy.get("#username").type(username);
 			cy.get("#create > :nth-child(2) > input").click();
 
@@ -61,8 +64,6 @@ describe("create", () => {
 
 	describe("second time", () => {
 		it("should say 'username exists'", () => {
-			cy.visit("http://localhost:8080/create");
-
 			cy.get("#username").type(username);
 			cy.get("#create > :nth-child(2) > input").click();
 
@@ -72,10 +73,12 @@ describe("create", () => {
 });
 
 describe("login", () => {
+	beforeEach(() => {
+		cy.visit("http://localhost:8080/login");
+	});
+
 	describe("username does not exist", () => {
 		it("should say 'not found'", () => {
-			cy.visit("http://localhost:8080/login");
-
 			cy.get("#username").type(notUsername);
 			cy.get("#password").type(authenticator.generate(notSecret));
 			cy.get(":nth-child(3) > input").click();
@@ -86,8 +89,6 @@ describe("login", () => {
 
 	describe("password is incorrect", () => {
 		it("should say 'password incorrect'", () => {
-			cy.visit("http://localhost:8080/login");
-
 			cy.get("#username").type(username);
 			cy.get("#password").type(authenticator.generate(notSecret));
 			cy.get(":nth-child(3) > input").click();
@@ -98,13 +99,192 @@ describe("login", () => {
 
 	describe("correct username and password", () => {
 		it("should redirect to /list", () => {
-			cy.visit("http://localhost:8080/login");
-
 			cy.get("#username").type(username);
 			cy.get("#password").type(authenticator.generate(secret));
 			cy.get(":nth-child(3) > input").click();
 
 			cy.location("pathname").should("include", "/list");
+		});
+	});
+});
+
+describe("list", () => {
+	beforeEach(() => {
+		cy.visit("http://localhost:8080/login");
+
+		cy.intercept("GET", "/quiz").as("list");
+
+		//login
+		cy.get("#username").type(username);
+		cy.get("#password").type(authenticator.generate(secret));
+		cy.get(":nth-child(3) > input").click();
+
+		cy.wait("@list");
+	});
+
+	describe("initially", () => {
+		it("should not have any quizzes", () => {
+			cy.get("#list")
+				.children()
+				.should("have.length", 0);
+		});
+	});
+
+	describe("add quiz", () => {
+		it("should add list item with 'untitled quiz' and edit/play buttons", () => {
+			cy.get("#add").click();
+
+			cy.get("#list")
+				.children()
+				.should("have.length", 1);
+			cy.get("#list")
+				.children("li:first")
+				.children("span")
+				.should("have.text", "untitled quiz");
+			cy.get("#list")
+				.children("li:first")
+				.children("a:nth-of-type(1)")
+				.should("have.text", "edit")
+				.should("have.attr", "href")
+				.and("include", "/edit/");
+			cy.get("#list")
+				.children("li:first")
+				.children("a:nth-of-type(2)")
+				.should("have.text", "play")
+				.should("have.attr", "href")
+				.and("include", "/play/");
+		});
+	});
+
+	describe("edit quiz", () => {
+		it("should go to quiz edit page", () => {
+			cy.get("#list")
+				.children("li:first")
+				.children("a:contains('edit')")
+				.click();
+
+			cy.location("pathname").should("include", "/edit");
+		});
+	});
+
+	describe("play quiz", () => {
+		it("should go to quiz play page", () => {
+			cy.get("#list")
+				.children("li:first")
+				.children("a:contains('play')")
+				.click();
+
+			cy.location("pathname").should("include", "/play");
+		});
+	});
+});
+
+const quizTitle = "this is a test quiz";
+
+describe("edit", () => {
+	beforeEach(() => {
+		cy.visit("http://localhost:8080/login");
+
+		cy.intercept("GET", "/quiz").as("list");
+
+		//login
+		cy.get("#username").type(username);
+		cy.get("#password").type(authenticator.generate(secret));
+		cy.get(":nth-child(3) > input").click();
+
+		cy.wait("@list");
+
+		//edit
+		cy.get("#list")
+			.children("li:first")
+			.children("a:contains('edit')")
+			.click();
+	});
+
+	describe("change title", () => {
+		it("should change title", () => {
+			cy.window().then(w => cy.stub(w, "prompt").returns(quizTitle));
+
+			cy.get("#title")
+				.children("button:contains('edit')")
+				.click();
+
+			cy.get("#title")
+				.children("span")
+				.should("have.text", quizTitle);
+		});
+	});
+
+	describe("toggle open/close", () => {
+		it("should change 'closed' to 'opened'", () => {
+			cy.get("#title")
+				.children("button:contains('closed')")
+				.click();
+
+			cy.get("#title")
+				.children("button:contains('opened')")
+				.should("exist");
+		});
+
+		it("should change 'opened' to 'closed'", () => {
+			cy.get("#title")
+				.children("button:contains('opened')")
+				.click();
+
+			cy.get("#title")
+				.children("button:contains('closed')")
+				.should("exist");
+		});
+
+		after(() => {
+			//change to open
+			cy.get("#title")
+				.children("button:contains('closed')")
+				.click();
+		});
+	});
+
+	describe("toggle question shuffle", () => {
+		it("should change 'ordered' to 'shuffled'", () => {
+			cy.get("#title")
+				.children("button:contains('questions ordered')")
+				.click();
+
+			cy.get("#title")
+				.children("button:contains('questions shuffled')")
+				.should("exist");
+		});
+
+		it("should change 'shuffled' to 'ordered'", () => {
+			cy.get("#title")
+				.children("button:contains('questions shuffled')")
+				.click();
+
+			cy.get("#title")
+				.children("button:contains('questions ordered')")
+				.should("exist");
+		});
+	});
+
+	describe("toggle answers shuffle", () => {
+		it("should change 'ordered' to 'shuffled'", () => {
+			cy.get("#title")
+				.children("button:contains('answers ordered')")
+				.click();
+
+			cy.get("#title")
+				.children("button:contains('answers shuffled')")
+				.should("exist");
+		});
+
+		it("should change 'shuffled' to 'ordered'", () => {
+			cy.get("#title")
+				.children("button:contains('answers shuffled')")
+				.click();
+
+			cy.get("#title")
+				.children("button:contains('answers ordered')")
+				.should("exist");
 		});
 	});
 });
