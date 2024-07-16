@@ -1,5 +1,6 @@
 package sanko.quiz.user;
 
+import java.util.*; //Set, HashSet
 import java.nio.ByteBuffer;
 import java.security.*; //SecureRandom, NoSuchAlgorithmException, InvalidKeyException
 import javax.crypto.Mac;
@@ -16,24 +17,33 @@ public class PasswordServ {
 	private final Base32 base32 = new Base32();
 	private final SecureRandom random = new SecureRandom();
 
+	private final Set<String> usedPasswords = new HashSet<>();
+
 	public String createKey() {
 		byte[] bytes = new byte[20];
 		random.nextBytes(bytes);
 		return new String(base32.encode(bytes));
 	}
 
-	public boolean verify(String key, String password) {
+	public boolean verify(String username, String key, String password) {
+		//fail if password has been used
+		if (usedPasswords.contains(username + password)) {
+			return false;
+		}
+
 		long time = System.currentTimeMillis() / 1000L;
 		long count = time / 30L;
 		long countPrev = count - 1;
 
 		String check = fromCount(key, count);
 		if (check.equals(password)) {
+			usedPasswords.add(username + password);
 			return true;
 		}
 
 		check = fromCount(key, countPrev);
 		if (check.equals(password)) {
+			usedPasswords.add(username + password);
 			return true;
 		}
 

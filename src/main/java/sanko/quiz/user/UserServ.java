@@ -41,10 +41,11 @@ public class UserServ {
 	@Transactional
 	public UserVerifyRes verify(UserVerifyReq req, User currentUser) {
 		if (currentUser != null) return Response.fail(UserVerifyRes.class, Const.ALREADY_LOGGED_IN);
-		User user = userRepo.findOneByUsername(req.username());
 
+		User user = userRepo.findOneByUsername(req.username());
 		if (user == null) return Response.fail(UserVerifyRes.class, Const.NOT_FOUND);
-		if (!passwordServ.verify(user.key(), req.password())) {
+
+		if (!passwordServ.verify(user.username(), user.key(), req.password())) {
 			return Response.fail(UserVerifyRes.class, Const.PASSWORD_INCORRECT);
 		}
 
@@ -62,7 +63,7 @@ public class UserServ {
 
 		if (user == null) return Response.fail(UserLoginRes.class, Const.NOT_FOUND);
 		if (!user.verified()) return Response.fail(UserLoginRes.class, Const.NOT_VERIFIED);
-		if (!passwordServ.verify(user.key(), req.password())) {
+		if (!passwordServ.verify(user.username(), user.key(), req.password())) {
 			return Response.fail(UserLoginRes.class, Const.PASSWORD_INCORRECT);
 		}
 

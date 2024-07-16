@@ -6,6 +6,8 @@ let secret;
 const notUsername = `cypress.${Cypress._.random(0, Number.MAX_SAFE_INTEGER)}`;
 const notSecret = "notsecret";
 
+Cypress.session.clearAllSavedSessions();
+
 describe("index", () => {
 	beforeEach(() => {
 		cy.visit("http://localhost:8080");
@@ -16,12 +18,12 @@ describe("index", () => {
 
 	it("should link to create", () => {
 		cy.get(":nth-child(2) > a").click();
-		cy.location("pathname").should("include", "/create");
+		cy.url().should("include", "/create");
 	});
 
 	it("should link to login", () => {
 		cy.get(":nth-child(3) > a").click();
-		cy.location("pathname").should("include", "/login");
+		cy.url().should("include", "/login");
 	});
 });
 
@@ -57,7 +59,7 @@ describe("create", () => {
 
 					cy.get("#password").type(password);
 					cy.get(":nth-child(3) > input").click();
-					cy.location("pathname").should("include", "/list");
+					cy.url().should("include", "/list");
 				});
 		});
 	});
@@ -70,7 +72,20 @@ describe("create", () => {
 			cy.get("#message").should("have.text", "username exists");
 		});
 	});
+
+	after(() => cy.wait(30000));
 });
+
+function login() {
+	cy.visit("http://localhost:8080/login");
+
+	//login
+	cy.get("#username").type(username);
+	cy.get("#password").type(authenticator.generate(secret));
+	cy.get(":nth-child(3) > input").click();
+
+	cy.url().should("contain", "/list");
+}
 
 describe("login", () => {
 	beforeEach(() => {
@@ -99,26 +114,17 @@ describe("login", () => {
 
 	describe("correct username and password", () => {
 		it("should redirect to /list", () => {
-			cy.get("#username").type(username);
-			cy.get("#password").type(authenticator.generate(secret));
-			cy.get(":nth-child(3) > input").click();
-
-			cy.location("pathname").should("include", "/list");
+			cy.session("login", login);
 		});
 	});
 });
 
 describe("list", () => {
 	beforeEach(() => {
-		cy.visit("http://localhost:8080/login");
+		cy.session("login", login);
 
 		cy.intercept("GET", "/quiz").as("list");
-
-		//login
-		cy.get("#username").type(username);
-		cy.get("#password").type(authenticator.generate(secret));
-		cy.get(":nth-child(3) > input").click();
-
+		cy.visit("http://localhost:8080/list");
 		cy.wait("@list");
 	});
 
@@ -163,7 +169,7 @@ describe("list", () => {
 				.children("a:contains('edit')")
 				.click();
 
-			cy.location("pathname").should("include", "/edit");
+			cy.url().should("include", "/edit");
 		});
 	});
 
@@ -174,7 +180,7 @@ describe("list", () => {
 				.children("a:contains('play')")
 				.click();
 
-			cy.location("pathname").should("include", "/play");
+			cy.url().should("include", "/play");
 		});
 	});
 });
@@ -183,15 +189,10 @@ const quizTitle = "this is a test quiz";
 
 describe("edit", () => {
 	beforeEach(() => {
-		cy.visit("http://localhost:8080/login");
+		cy.session("login", login);
 
 		cy.intercept("GET", "/quiz").as("list");
-
-		//login
-		cy.get("#username").type(username);
-		cy.get("#password").type(authenticator.generate(secret));
-		cy.get(":nth-child(3) > input").click();
-
+		cy.visit("http://localhost:8080/list");
 		cy.wait("@list");
 
 		//edit

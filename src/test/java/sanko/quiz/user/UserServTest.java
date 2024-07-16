@@ -159,7 +159,7 @@ class UserServTest {
 		when(userRepo.findOneByUsername(anyString()))
 			.thenReturn(user);
 
-		when(passwordServ.verify(eq(key), eq(password)))
+		when(passwordServ.verify(eq(username), eq(key), eq(password)))
 			.thenReturn(true);
 
 		when(userRepo.save(eq(user)))
@@ -173,7 +173,7 @@ class UserServTest {
 		assertNull(res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
-		verify(passwordServ, times(1)).verify(eq(key), eq(password));
+		verify(passwordServ, times(1)).verify(eq(username), eq(key), eq(password));
 		verify(userRepo, times(1)).save(eq(user));
 		verify(sessionServ, times(1)).setUser(eq(user));
 	}
@@ -203,7 +203,7 @@ class UserServTest {
 		assertEquals(Const.ALREADY_LOGGED_IN, res.message());
 
 		verify(userRepo, never()).findOneByUsername(anyString());
-		verify(passwordServ, never()).verify(anyString(), anyString());
+		verify(passwordServ, never()).verify(anyString(), anyString(), anyString());
 		verify(userRepo, never()).save(any(User.class));
 		verify(sessionServ, never()).setUser(any(User.class));
 	}
@@ -231,7 +231,7 @@ class UserServTest {
 		assertEquals(Const.NOT_FOUND, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
-		verify(passwordServ, never()).verify(anyString(), anyString());
+		verify(passwordServ, never()).verify(anyString(), anyString(), anyString());
 		verify(userRepo, never()).save(any(User.class));
 		verify(sessionServ, never()).setUser(any(User.class));
 	}
@@ -256,7 +256,7 @@ class UserServTest {
 		when(userRepo.findOneByUsername(anyString()))
 			.thenReturn(user);
 
-		when(passwordServ.verify(eq(key), eq(password)))
+		when(passwordServ.verify(eq(username), eq(key), eq(password)))
 			.thenReturn(false);
 
 		//when
@@ -267,7 +267,7 @@ class UserServTest {
 		assertEquals(Const.PASSWORD_INCORRECT, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
-		verify(passwordServ, times(1)).verify(eq(key), eq(password));
+		verify(passwordServ, times(1)).verify(eq(username), eq(key), eq(password));
 		verify(userRepo, never()).save(any(User.class));
 		verify(sessionServ, never()).setUser(any(User.class));
 	}
@@ -293,7 +293,7 @@ class UserServTest {
 		when(userRepo.findOneByUsername(anyString()))
 			.thenReturn(user);
 
-		when(passwordServ.verify(eq(key), eq(password)))
+		when(passwordServ.verify(eq(username), eq(key), eq(password)))
 			.thenReturn(true);
 
 		//when
@@ -304,7 +304,7 @@ class UserServTest {
 		assertNull(res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
-		verify(passwordServ, times(1)).verify(eq(key), eq(password));
+		verify(passwordServ, times(1)).verify(eq(username), eq(key), eq(password));
 		verify(sessionServ, times(1)).setUser(eq(user));
 	}
 
@@ -334,7 +334,7 @@ class UserServTest {
 		assertEquals(Const.ALREADY_LOGGED_IN, res.message());
 
 		verify(userRepo, never()).findOneByUsername(anyString());
-		verify(passwordServ, never()).verify(anyString(), anyString());
+		verify(passwordServ, never()).verify(anyString(), anyString(), anyString());
 		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
@@ -361,7 +361,7 @@ class UserServTest {
 		assertEquals(Const.NOT_FOUND, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(anyString());
-		verify(passwordServ, never()).verify(anyString(), anyString());
+		verify(passwordServ, never()).verify(anyString(), anyString(), anyString());
 		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
@@ -394,7 +394,7 @@ class UserServTest {
 		assertEquals(Const.NOT_VERIFIED, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(anyString());
-		verify(passwordServ, never()).verify(anyString(), anyString());
+		verify(passwordServ, never()).verify(anyString(), anyString(), anyString());
 		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
@@ -419,7 +419,7 @@ class UserServTest {
 		when(userRepo.findOneByUsername(anyString()))
 			.thenReturn(user);
 
-		when(passwordServ.verify(eq(key), eq(password)))
+		when(passwordServ.verify(eq(username), eq(key), eq(password)))
 			.thenReturn(false);
 
 		//when
@@ -430,7 +430,7 @@ class UserServTest {
 		assertEquals(Const.PASSWORD_INCORRECT, res.message());
 
 		verify(userRepo, times(1)).findOneByUsername(eq(username));
-		verify(passwordServ, times(1)).verify(eq(key), eq(password));
+		verify(passwordServ, times(1)).verify(eq(username), eq(key), eq(password));
 		verify(sessionServ, never()).setUser(any(User.class));
 	}
 
