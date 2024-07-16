@@ -23,9 +23,21 @@ public class PasswordServ {
 	}
 
 	public boolean verify(String key, String password) {
-		String check = fromTime(key);
+		long time = System.currentTimeMillis() / 1000L;
+		long count = time / 30L;
+		long countPrev = count - 1;
 
-		return check.equals(password);
+		String check = fromCount(key, count);
+		if (check.equals(password)) {
+			return true;
+		}
+
+		check = fromCount(key, countPrev);
+		if (check.equals(password)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public String fromTime(String key) {
