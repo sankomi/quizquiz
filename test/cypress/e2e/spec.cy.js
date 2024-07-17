@@ -72,6 +72,10 @@ describe("create", () => {
 			cy.get("#message").should("have.text", "username exists");
 		});
 	});
+});
+
+describe("wait for next password", () => {
+	it("should wait", () => {});
 
 	after(() => cy.wait(30000));
 });
@@ -236,13 +240,6 @@ describe("edit", () => {
 				.children("button:contains('closed')")
 				.should("exist");
 		});
-
-		after(() => {
-			//change to open
-			cy.get("#title")
-				.children("button:contains('closed')")
-				.click();
-		});
 	});
 
 	describe("toggle question shuffle", () => {
@@ -286,6 +283,232 @@ describe("edit", () => {
 			cy.get("#title")
 				.children("button:contains('answers ordered')")
 				.should("exist");
+		});
+	});
+});
+
+const questionText = "1 + 1 = ?";
+const answerTexts = ["1", "2", "3", "4"];
+
+describe("questions", () => {
+	let id = null;
+
+	beforeEach(() => {
+		cy.session("login", login);
+
+		cy.intercept("GET", "/quiz").as("list");
+		cy.visit("http://localhost:8080/list");
+		cy.wait("@list");
+
+		//edit
+		cy.get("#list")
+			.children("li:first")
+			.children("a:contains('edit')")
+			.as("link");
+
+		cy.get("@link")
+			.should("have.attr", "href")
+			.then(href => id = href.split("/").pop())
+			.then(() => {
+				cy.intercept("GET", `/quiz/${id}`).as("quiz");
+				cy.get("@link").click();
+				cy.wait("@quiz");
+			});
+	});
+
+	describe("initially", () => {
+		it("should not have any questions", () => {
+			cy.get("#questions")
+				.children()
+				.should("have.length", 0);
+		});
+	});
+
+	describe("click add question", () => {
+		it("should add question list item with 4 answers", () => {
+			cy.get("#add").click();
+
+			cy.get("#questions")
+				.children("ul")
+				.children("li:first")
+				.as("question");
+
+			cy.get("@question")
+				.children("span")
+				.should("have.text", "question 1");
+
+			cy.get("@question")
+				.children("ul")
+				.children("li")
+				.should("have.length", 4);
+
+			cy.get("@question")
+				.children("ul")
+				.children("li")
+				.children("span")
+				.should("contain.text", "answer");
+		});
+	});
+
+	describe("change question text", () => {
+		it("should change question text", () => {
+			cy.window().then(w => cy.stub(w, "prompt").returns(questionText));
+
+			cy.get("#questions")
+				.children("ul")
+				.children("li:first")
+				.as("question");
+
+			cy.get("@question")
+				.children("button:contains('edit')")
+				.click()
+
+			cy.get("@question")
+				.children("span")
+				.should("have.text", questionText);
+		});
+	});
+
+	describe("change answer texts", () => {
+		it("should change answer texts", () => {
+			cy.get("#questions")
+				.children("ul")
+				.children("li:first")
+				.children("ul")
+				.children("li")
+				.as("answers");
+
+			let index = 0;
+			cy.window().then(w => cy.stub(w, "prompt").callsFake(() => answerTexts[index++]))
+
+			for (let i = 0; i < answerTexts.length; i++) {
+				cy.get("@answers")
+					.eq(i)
+					.children("button:contains('edit')")
+					.click()
+
+				cy.get("@answers")
+					.eq(i)
+					.children("span")
+					.should("have.text", answerTexts[i] + " ");
+			}
+		});
+	});
+
+	describe("change answer to correct", () => {
+		it("should change answer to correct", () => {
+			cy.get("#questions")
+				.children("ul")
+				.children("li:first")
+				.children("ul")
+				.children("li")
+				.eq(1)
+				.as("answer");
+
+			cy.get("@answer")
+				.children("button:contains('correct')")
+				.click();
+
+			cy.get("@answer")
+				.children("span")
+				.should("contain.text", "(correct)");
+		});
+	});
+});
+
+describe("play", () => {
+	let id = null;
+
+	beforeEach(() => {
+		cy.session("login", login);
+
+		cy.intercept("GET", "/quiz").as("list");
+		cy.visit("http://localhost:8080/list");
+		cy.wait("@list");
+
+		//play
+		cy.get("#list")
+			.children("li:first")
+			.children("a:contains('play')")
+			.as("link");
+
+		cy.get("@link")
+			.should("have.attr", "href")
+			.then(href => id = href.split("/").pop())
+			.then(() => {
+				cy.intercept("GET", `/quiz/${id}`).as("quiz");
+				cy.get("@link").click();
+				cy.wait("@quiz");
+			});
+	});
+
+	describe("click play", () => {
+		it("should redirect to /play", () => {
+			cy.url().should("include", `/play/${id}`);
+		});
+	});
+
+	describe("click correct answer", () => {
+		it("should score 100% (1/1)", () => {
+			cy.wait(1500);
+
+			cy.get("ol.answers")
+				.children("li")
+				.children("div:contains('2')")
+				.click({force: true});
+
+			cy.get("#app h2")
+				.should("have.text", "score 100% (1/1)");
+		});
+	});
+
+	describe("click incorrect answer", () => {
+		it("should score 0% (0/1)", () => {
+			cy.wait(1500);
+
+			cy.get("ol.answers")
+				.children("li")
+				.children("div:contains('1')")
+				.click({force: true});
+
+			cy.get("#app h2")
+				.should("have.text", "score 0% (0/1)");
+		});
+	});
+
+	describe("when logged out", () => {
+		it("should not find quiz", () => {
+			cy.session("logout", () => {});
+
+			cy.intercept("GET", `/quiz/${id}`).as("quiz");
+			cy.visit(`http://localhost:8080/play/${id}`);
+			cy.wait("@quiz");
+
+			cy.wait(1000);
+			cy.get("#app h1")
+				.should("have.text", "not found");
+		});
+	});
+});
+
+describe("logout", () => {
+	before(() => {
+		cy.session("login", login);
+
+		cy.visit("http://localhost:8080/list");
+	});
+
+	describe("click logout", () => {
+		it("should redirect to /", () => {
+			cy.intercept("DELETE", "/user/login").as("logout");
+
+			cy.get("body > .logout > a").click();
+
+			cy.url().should("include", "/logout");
+
+			cy.wait("@logout");
+
+			cy.url().should("include", "/login");
 		});
 	});
 });
