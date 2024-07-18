@@ -26,11 +26,11 @@ public class QuizFetchRes extends Response {
 	private Boolean shuffleQuestions;
 	private Boolean shuffleAnswers;
 
-	public static QuizFetchRes success(Quiz quiz) {
-		if (quiz.shuffleQuestions()) {
+	public static QuizFetchRes success(Quiz quiz, boolean editing) {
+		if (!editing && quiz.shuffleQuestions()) {
 			Collections.shuffle(quiz.questions());
 		}
-		if (quiz.shuffleAnswers()) {
+		if (!editing && quiz.shuffleAnswers()) {
 			quiz.questions().forEach(question -> {
 				Collections.shuffle(question.answers());
 			});

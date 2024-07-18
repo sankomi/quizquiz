@@ -107,7 +107,7 @@ class QuizServTest {
 			.thenReturn(quiz);
 
 		//when
-		QuizFetchRes res = quizServ.fetch(quizId, user);
+		QuizFetchRes res = quizServ.fetch(quizId, false, user);
 
 		//then
 		assertTrue(res.ok());
@@ -135,7 +135,7 @@ class QuizServTest {
 			.thenReturn(quiz);
 
 		//when
-		QuizFetchRes res = quizServ.fetch(quizId, null);
+		QuizFetchRes res = quizServ.fetch(quizId, false, null);
 
 		//then
 		assertFalse(res.ok());
@@ -180,7 +180,7 @@ class QuizServTest {
 			.thenReturn(quiz);
 
 		//when
-		QuizFetchRes res = quizServ.fetch(quizId, user);
+		QuizFetchRes res = quizServ.fetch(quizId, false, user);
 
 		//then
 		assertFalse(res.ok());
@@ -209,7 +209,7 @@ class QuizServTest {
 			.thenReturn(null);
 
 		//when
-		QuizFetchRes res = quizServ.fetch(quizId, user);
+		QuizFetchRes res = quizServ.fetch(quizId, false, user);
 
 		//then
 		assertFalse(res.ok());

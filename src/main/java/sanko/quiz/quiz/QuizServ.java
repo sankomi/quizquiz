@@ -43,7 +43,7 @@ public class QuizServ {
 		return QuizListRes.success(list);
 	}
 
-	public QuizFetchRes fetch(UUID quizId, User currentUser) {
+	public QuizFetchRes fetch(UUID quizId, Boolean edit, User currentUser) {
 		Quiz quiz = quizRepo.findOneByQuizId(quizId);
 		if (quiz == null) return Response.fail(QuizFetchRes.class, Const.NOT_FOUND);
 
@@ -55,7 +55,9 @@ public class QuizServ {
 			}
 		}
 
-		return QuizFetchRes.success(quiz);
+		if (edit == null) edit = false;
+		boolean editing = edit && quiz.user().id().equals(currentUser.id());
+		return QuizFetchRes.success(quiz, editing);
 	}
 
 	public QuizQrRes qr(UUID quizId, User currentUser) {

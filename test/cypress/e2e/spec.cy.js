@@ -310,7 +310,7 @@ describe("questions", () => {
 			.should("have.attr", "href")
 			.then(href => id = href.split("/").pop())
 			.then(() => {
-				cy.intercept("GET", `/quiz/${id}`).as("quiz");
+				cy.intercept("GET", `/quiz/${id}?edit=true`).as("quiz");
 				cy.get("@link").click();
 				cy.wait("@quiz");
 			});

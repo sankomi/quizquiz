@@ -93,8 +93,8 @@ class QuizContTest {
 		when(sessionServ.getUser())
 			.thenReturn(user);
 
-		when(quizServ.fetch(eq(quizId), eq(user)))
-			.thenReturn(QuizFetchRes.success(quiz));
+		when(quizServ.fetch(eq(quizId), eq(null), eq(user)))
+			.thenReturn(QuizFetchRes.success(quiz, false));
 
 		//when
 		ResultActions res = mockMvc.perform(get("/quiz/" + String.valueOf(quizId)));
@@ -105,7 +105,7 @@ class QuizContTest {
 			.andExpect(jsonPath("$.quizId").value(quizId.toString()))
 			.andExpect(jsonPath("$.title").value(title));
 
-		verify(quizServ, times(1)).fetch(eq(quizId), eq(user));
+		verify(quizServ, times(1)).fetch(eq(quizId), eq(null), eq(user));
 		verify(sessionServ, times(1)).getUser();
 	}
 

@@ -2,7 +2,7 @@ package sanko.quiz.quiz;
 
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.*; //RestController, RequestMapping, PostMapping, RequestBody, PathVariable
+import org.springframework.web.bind.annotation.*; //RestController, RequestMapping, PostMapping, RequestBody, PathVariable, RequestParam
 import lombok.RequiredArgsConstructor;
 
 import sanko.quiz.user.User;
@@ -28,9 +28,10 @@ public class QuizCont {
 	@GetMapping("/{quizId}")
 	public QuizFetchRes fetch(
 		@PathVariable("quizId") UUID quizId,
+		@RequestParam(required = false) Boolean edit,
 		@CurrentUser User currentUser
 	) {
-		return quizServ.fetch(quizId, currentUser);
+		return quizServ.fetch(quizId, edit, currentUser);
 	}
 
 	@GetMapping("/{quizId}/qr")

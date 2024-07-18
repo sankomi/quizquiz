@@ -56,7 +56,7 @@
 			function loadQuiz() {
 				if (!beginFetch()) return;
 
-				fetch(`/quiz/${quizId}`)
+				fetch(`/quiz/${quizId}?edit=true`)
 					.then(res => res.json())
 					.then(json => {
 						if (json.ok) {
