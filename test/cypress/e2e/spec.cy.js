@@ -208,7 +208,7 @@ describe("edit", () => {
 
 	describe("change title", () => {
 		it("should change title", () => {
-			cy.window().then(w => cy.stub(w, "prompt").returns(quizTitle));
+			cy.window().then(w => cy.stub(w, "promptPopup").returns(quizTitle));
 
 			cy.get("#title")
 				.children("button:contains('edit')")
@@ -352,7 +352,7 @@ describe("questions", () => {
 
 	describe("change question text", () => {
 		it("should change question text", () => {
-			cy.window().then(w => cy.stub(w, "prompt").returns(questionText));
+			cy.window().then(w => cy.stub(w, "promptPopup").returns(questionText));
 
 			cy.get("#questions")
 				.children("ul")
@@ -379,7 +379,7 @@ describe("questions", () => {
 				.as("answers");
 
 			let index = 0;
-			cy.window().then(w => cy.stub(w, "prompt").callsFake(() => answerTexts[index++]))
+			cy.window().then(w => cy.stub(w, "promptPopup").callsFake(() => answerTexts[index++]))
 
 			for (let i = 0; i < answerTexts.length; i++) {
 				cy.get("@answers")

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="noindex">
+
+		<title>prompt - quizquiz</title>
+
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	<body>
+		<p id="message"></p>
+		<form id="form">
+			<div>
+				<input id="result">
+				<button>ok</button>
+			</div>
+		</form>
+		<script>
+			if (!window.opener) {
+				window.close();
+			} else {
+				const urlParams = new URLSearchParams(window.location.search);
+				const message = urlParams.get("message");
+				const value = urlParams.get("value");
+				document.getElementById("message").textContent = message;
+
+				const form = document.getElementById("form");
+				const result = document.getElementById("result");
+				result.value = value;
+				result.select();
+				result.focus();
+
+				let submitted = false;
+
+				form.addEventListener("submit", event => {
+					event.preventDefault();
+
+					submitted = true;
+
+					window.opener.postMessage({
+						prompt: true,
+						result: result.value,
+					});
+
+					window.close();
+				});
+
+				window.addEventListener("keydown", event => {
+					if (event.key === "Escape") {
+						window.close();
+					}
+				});
+
+				window.addEventListener("beforeunload", event => {
+					if (!submitted) {
+						window.opener.postMessage({
+							prompt: true,
+							result: null,
+						});
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

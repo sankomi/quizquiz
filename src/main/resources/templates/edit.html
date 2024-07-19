@@ -37,6 +37,24 @@
 
 			loadQuiz();
 
+			async function promptPopup(message, value) {
+				const popup = window.open(
+					`/prompt?message=${message}&value=${value}`,
+					"prompt-popup",
+					"popup,width=260,height=100",
+				);
+				popup.focus();
+
+				return new Promise(res => {
+					window.addEventListener("message", event => {
+						if (event.origin !== window.location.origin) return;
+						if (!event.data.prompt) return;
+
+						res(event.data.result);
+					});
+				});
+			}
+
 			function beginFetch() {
 				if (fetching) return false;
 				fetching = true;
@@ -95,10 +113,10 @@
 					.finally(endFetch);
 			}
 
-			function editTitle() {
+			async function editTitle() {
 				if (!beginFetch()) return;
 
-				const title = prompt("quiz title?", quiz.title);
+				const title = await promptPopup("quiz title?", quiz.title);
 				if (!title) return endFetch();
 
 				fetch("/quiz", {
@@ -180,10 +198,10 @@
 					.finally(endFetch);
 			}
 
-			function editQuestion(question) {
+			async function editQuestion(question) {
 				if (!beginFetch()) return;
 
-				const text = prompt("question text?", question.text);
+				const text = await promptPopup("question text?", question.text);
 				if (!text) return endFetch();
 
 				fetch("/question", {
@@ -204,10 +222,10 @@
 					.finally(endFetch);
 			}
 
-			function editAnswer(question, answer) {
+			async function editAnswer(question, answer) {
 				if (!beginFetch()) return;
 
-				const text = prompt("answer text?", answer.text);
+				const text = await promptPopup("answer text?", answer.text);
 				if (!text) return endFetch();
 
 				fetch("/answer", {

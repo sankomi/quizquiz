@@ -69,4 +69,9 @@ public class WebCont {
 		return "play";
 	}
 
+	@GetMapping("/prompt")
+	public String prompt() {
+		return "prompt";
+	}
+
 }
